@@ -7,22 +7,20 @@ assignees: ''
 
 ---
 
-Description
-
+## Description
 Describe the task and what needs to be done.
 
-Motivation
-
+## Motivation
 Why is this task needed? What problem does it solve?
 
-Acceptance Criteria
-
+## Acceptance Criteria
 List the conditions that must be met for this task to be considered complete.
 
-Dependencies
+- [ ] 
+- [ ] 
 
+## Dependencies
 List any tasks or work that must be completed first.
 
-Additional Notes
-
+## Additional Notes
 Add relevant references, links, or technical details.
