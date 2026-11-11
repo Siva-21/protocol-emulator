@@ -1,20 +1,29 @@
-<!---
-
-This file is used to generate your project datasheet. Please fill in the information below and delete any unused
-sections.
-
-You can also include images in this folder and reference them in the markdown. Each image must be less than
-512 kb in size, and the combined size of all images must be less than 1 MB.
--->
-
 ## How it works
 
-Explain how your project works
+The Protocol Emulator is a chip that emulates digital communication protocols under
+the control of a host. A host (for example the RP2350 on the Tiny Tapeout demo board)
+talks to it over a 4-wire SPI link (mode 0, bytes MSB-first). Through that link the
+host reads and writes the chip's internal registers, which configure and drive the
+protocol engines on the `protocol in/out/io` pins.
+
+**Design in progress:** this version is a placeholder top with all outputs tied low.
+The host link and protocol engines are not included yet.
+
+### Host link pins
+
+| Pin | Signal | Direction |
+|-----|--------|-----------|
+| `ui[0]` | SCK | host -> chip |
+| `ui[1]` | CS_n (active low) | host -> chip |
+| `ui[2]` | MOSI | host -> chip |
+| `uo[0]` | MISO | chip -> host |
+
+`ui[3..7]`, `uo[1..7]` and `uio[0..7]` are reserved for the protocol engines.
 
 ## How to test
 
-Explain how to use your project
+Not testable yet: the placeholder drives every output low.
 
 ## External hardware
 
-List external hardware used in your project (e.g. PMOD, LED display, etc), if any
+An SPI host, such as the RP2350 on the Tiny Tapeout demo board.

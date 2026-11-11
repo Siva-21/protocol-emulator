@@ -1,56 +1,56 @@
 # Tiny Tapeout project information
 project:
-  title:        ""      # Project title
-  author:       ""      # Your name
+  title:        "Protocol Emulator"      # Project title
+  author:       "Protocol Emulator Team"      # Your name
   discord:      ""      # Your discord username, for communication and automatically assigning you a Tapeout role (optional)
-  description:  ""      # One line description of what your project does
+  description:  "SPI host link and protocol emulator (design in progress)"      # One line description of what your project does
   language:     "Verilog" # other examples include SystemVerilog, Amaranth, VHDL, etc
-  clock_hz:     0       # Clock frequency in Hz (or 0 if not applicable)
+  clock_hz:     50000000       # Clock frequency in Hz (or 0 if not applicable)
 
   # How many tiles your design occupies? A single tile is about 202x155 uM.
-  tiles: "1x1"          # Valid values: 1x1, 1x2, 2x2, 3x2, 4x2, 6x2, 8x2, 3x4, 4x4, 5x4, 6x4 or 8x4
+  tiles: "8x4"          # Valid values: 1x1, 1x2, 2x2, 3x2, 4x2, 6x2, 8x2, 3x4, 4x4, 5x4, 6x4 or 8x4
 
   # Your top module name must start with "tt_um_". Make it unique by including your github username:
-  top_module:  "tt_um_example"
+  top_module:  "tt_um_protocol_emulator_placeholder"
 
   # List your project's source files here.
   # Source files must be in ./src and you must list each source file separately, one per line.
   # Don't forget to also update `PROJECT_SOURCES` in test/Makefile.
   source_files:
-    - "project.v"
+    - "tt_um_protocol_emulator_placeholder.v"
 
 # The pinout of your project. Leave unused pins blank. DO NOT delete or add any pins.
 # This section is for the datasheet/website. Use descriptive names (e.g., RX, TX, MOSI, SCL, SEG_A, etc.).
 pinout:
   # Inputs
-  ui[0]: ""
-  ui[1]: ""
-  ui[2]: ""
-  ui[3]: ""
-  ui[4]: ""
-  ui[5]: ""
-  ui[6]: ""
-  ui[7]: ""
+  ui[0]: "host SCK"
+  ui[1]: "host CS_n"
+  ui[2]: "host MOSI"
+  ui[3]: "protocol in 3"
+  ui[4]: "protocol in 4"
+  ui[5]: "protocol in 5"
+  ui[6]: "protocol in 6"
+  ui[7]: "protocol in 7"
 
   # Outputs
-  uo[0]: ""
-  uo[1]: ""
-  uo[2]: ""
-  uo[3]: ""
-  uo[4]: ""
-  uo[5]: ""
-  uo[6]: ""
-  uo[7]: ""
+  uo[0]: "host MISO"
+  uo[1]: "protocol out 1"
+  uo[2]: "protocol out 2"
+  uo[3]: "protocol out 3"
+  uo[4]: "protocol out 4"
+  uo[5]: "protocol out 5"
+  uo[6]: "protocol out 6"
+  uo[7]: "protocol out 7"
 
   # Bidirectional pins
-  uio[0]: ""
-  uio[1]: ""
-  uio[2]: ""
-  uio[3]: ""
-  uio[4]: ""
-  uio[5]: ""
-  uio[6]: ""
-  uio[7]: ""
+  uio[0]: "protocol io 0"
+  uio[1]: "protocol io 1"
+  uio[2]: "protocol io 2"
+  uio[3]: "protocol io 3"
+  uio[4]: "protocol io 4"
+  uio[5]: "protocol io 5"
+  uio[6]: "protocol io 6"
+  uio[7]: "protocol io 7"
 
 # Do not change!
 yaml_version: 6
