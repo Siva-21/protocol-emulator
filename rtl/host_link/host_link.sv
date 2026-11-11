@@ -15,6 +15,17 @@
 //   bits 25-32  D[7:0]  (write) / MISO R[7:0]  (read)
 //   bits 33-40  D[15:8] (write) / MISO R[15:8] (read); write issued after bit 40
 //
+// System bus protocol (BUS-02 req/dir/ready, D-HL-7):
+//   - The master raises req with dir/addr (and wdata when dir = 1) and holds
+//     them stable until the access is accepted.
+//   - Write (dir = 1): accepted in the clock where wready = 1; the write takes
+//     effect at the edge ending that clock, and req drops at that edge.
+//   - Read  (dir = 0): accepted in the clock where rready = 1 (side effect at
+//     the edge ending that clock); rdata is valid the clock after rready.
+//   - wready/rready are combinational from the interconnect in the same clock
+//     and must not depend combinationally on wdata.
+//   - An unmapped address answers ready = 1 and rdata = 0.
+//
 // Structure (48 flops total, all async reset to 0):
 //
 //   spi ──> host_link_sync (7) ──sel/rise_en/fall_en/mosi_s──┐
@@ -22,15 +33,28 @@
 //                         host_link_ctrl (9)  <── wready/rready
 //                           │ a_sh, sr_shift, sr_load, miso_en  ──> req, dir
 //                           v
-//   spi.miso <── host_link_dp (32) <──> addr, wdata, rdata
-//
-// Ports use the shared bus definitions in rtl/bus_def.
+//   miso <── host_link_dp (32) <──> addr, wdata, rdata
 // -----------------------------------------------------------------------------
 
 module host_link (
-  clk_rst_if.sink    cr,    // clk, rst_n
-  spi_if.target      spi,   // ui_in[0] SCK, ui_in[1] CS_n, ui_in[2] MOSI, uo_out[0] MISO
-  sys_bus_if.master  bus    // system bus, master 0 (ADDR_W = DATA_W = 16)
+  // Clock and reset
+  input  wire        clk,
+  input  wire        rst_n,         // active low, async assert, sync release (G-02)
+
+  // SPI target, mode 0. SCK, CS_n and MOSI are asynchronous (P3).
+  input  wire        spi_sck_i,     // ui_in[0]
+  input  wire        spi_csn_i,     // ui_in[1], active low
+  input  wire        spi_mosi_i,    // ui_in[2]
+  output wire        spi_miso_o,    // uo_out[0]
+
+  // System bus, master 0
+  output wire        bus_req_o,
+  output wire        bus_dir_o,     // 1 = write, 0 = read
+  output wire [15:0] bus_addr_o,
+  output wire [15:0] bus_wdata_o,
+  input  wire        bus_wready_i,  // write accepted this clock
+  input  wire        bus_rready_i,  // read accepted this clock
+  input  wire [15:0] bus_rdata_i    // valid the clock after rready
 );
 
   // Sync -> control/datapath
@@ -40,11 +64,11 @@ module host_link (
   wire a_sh, sr_shift, sr_load, miso_en;
 
   host_link_sync u_sync (
-    .clk      (cr.clk),
-    .rst_n    (cr.rst_n),
-    .sck_i    (spi.sck),
-    .csn_i    (spi.csn),
-    .mosi_i   (spi.mosi),
+    .clk      (clk),
+    .rst_n    (rst_n),
+    .sck_i    (spi_sck_i),
+    .csn_i    (spi_csn_i),
+    .mosi_i   (spi_mosi_i),
     .sel      (sel),
     .rise_en  (rise_en),
     .fall_en  (fall_en),
@@ -52,16 +76,16 @@ module host_link (
   );
 
   host_link_ctrl u_ctrl (
-    .clk        (cr.clk),
-    .rst_n      (cr.rst_n),
+    .clk        (clk),
+    .rst_n      (rst_n),
     .sel        (sel),
     .rise_en    (rise_en),
     .fall_en    (fall_en),
     .mosi_s     (mosi_s),
-    .wready_i   (bus.wready),
-    .rready_i   (bus.rready),
-    .req_o      (bus.req),
-    .dir_o      (bus.dir),
+    .wready_i   (bus_wready_i),
+    .rready_i   (bus_rready_i),
+    .req_o      (bus_req_o),
+    .dir_o      (bus_dir_o),
     .a_sh_o     (a_sh),
     .sr_shift_o (sr_shift),
     .sr_load_o  (sr_load),
@@ -69,17 +93,17 @@ module host_link (
   );
 
   host_link_dp u_dp (
-    .clk      (cr.clk),
-    .rst_n    (cr.rst_n),
+    .clk      (clk),
+    .rst_n    (rst_n),
     .mosi_s   (mosi_s),
     .a_sh     (a_sh),
     .sr_shift (sr_shift),
     .sr_load  (sr_load),
     .miso_en  (miso_en),
-    .rdata_i  (bus.rdata),
-    .addr_o   (bus.addr),
-    .wdata_o  (bus.wdata),
-    .miso_o   (spi.miso)
+    .rdata_i  (bus_rdata_i),
+    .addr_o   (bus_addr_o),
+    .wdata_o  (bus_wdata_o),
+    .miso_o   (spi_miso_o)
   );
 
 endmodule
