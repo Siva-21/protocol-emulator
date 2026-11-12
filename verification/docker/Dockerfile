@@ -1,6 +1,6 @@
 # pe-verif: IIC-OSIC-TOOLS plus the verification packages it lacks.
 #
-# Build:  docker build -t pe-verif:2026.10 ~/edatools/docker
+# Build:  docker build -t pe-verif:2026.10 verification/docker
 #
 # Adds: z3 + liblz4-dev (apt; lz4 for Verilator FST traces), bitwuzla (static release binary),
 #       pytest-xdist, cocotb-coverage, pyyaml (pip),

@@ -14,18 +14,20 @@ Use the following naming conventions:
 
 | Branch prefix | Purpose |
 |---|---|
-| `feature/` | New functionality |
-| `bugfix/` | Bug fixes |
-| `enhancement/` | Improvements to existing functionality |
+| `feature/` | New functionality and improvements to existing functionality |
+| `fix/` | Bug fixes |
+| `build/` | Build, tool-flow, CI and Docker changes |
+| `verif/` | Testbenches, formal, regressions |
 | `docs/` | Documentation changes |
 
 Examples:
 - `feature/i2c-controller`
-- `bugfix/spi-clock-generation`
-- `enhancement/uart-fifo`
+- `fix/spi-clock-generation`
+- `build/adopt-tt-layout`
+- `verif/spi-formal`
 - `docs/add-contributing-guide`
 
-Always create new branches from the latest `main`.
+Always create new branches from the latest `main`. Pull Requests go into `main` only.
 
 ## 2. Commit Guidelines
 
@@ -66,11 +68,20 @@ All changes must be submitted through Pull Requests (PRs) targeting `main`.
 
 ### 3.2 Make and Commit Changes
 
-1. Make the required code or documentation changes.
-2. Run relevant tests and checks.
+1. Make the required code or documentation changes, following the
+   [RTL coding rule](README.md#rtl-coding-rule).
+2. Run relevant tests and checks. Before every push, at least (inside the
+   `pe-verif` image, see [verification/docker/README.md](verification/docker/README.md)):
+   ```bash
+   scripts/check_rtl_frontend.sh
+   scripts/lint_rtl.sh
+   ```
+   For changes in `src/` or `test/`, also run the top-level test (`make -B -C test`);
+   see [README.md](README.md#running-the-flows-locally) for the other flows.
 3. Review your own changes.
 4. Stage and commit your changes with a descriptive commit message.
-5. Push your branch to GitHub.
+5. Rebase on the latest `main` (no merge commits from `main` into your branch).
+6. Push your branch to GitHub.
 
 Example Git commands:
 
@@ -83,7 +94,12 @@ git switch -c feature/i2c-controller
 
 git add .
 git commit -m "feat: add initial I2C controller"
-git push -u origin feature/i2c-controller
+
+# Before pushing: checks, then rebase on the latest main
+scripts/check_rtl_frontend.sh && scripts/lint_rtl.sh
+git fetch origin
+git rebase origin/main
+git push -u origin feature/i2c-controller        # after a rebase of a pushed branch: --force-with-lease
 ```
 
 ### 3.3 Create a Pull Request
@@ -97,11 +113,14 @@ git push -u origin feature/i2c-controller
 5. Click **Create pull request**.
 6. Provide a clear title and description explaining what changed and why.
 7. Reference the related Jira issue, where applicable.
-8. Click **Create pull request**.
+8. Add labels (see Section 5.1).
+9. Click **Create pull request**.
 
 ### 3.4 Review and Merge
 
-1. At least one approval is required before merging.
+1. All required GitHub checks must be green (`rtl-checks`, `test`, `docs`, `gds`
+   incl. precheck and gate-level test; see [README.md](README.md#github-checks)),
+   and at least one approval is required before merging.
 2. Reviewers should check correctness, readability, maintainability, and relevant verification evidence.
 3. Address review feedback and resolve all review conversations.
 4. Once approved, merge using **Squash and merge**.
@@ -129,7 +148,7 @@ This ensures that new work starts from the latest integrated code.
 
 ## 4. Code Review Guidelines
 
-- At least one approval is required before merging.
+- All required checks green and at least one approval are required before merging.
 - Resolve all review conversations before merging.
 - Reviewers should check correctness, readability, maintainability, and relevant verification evidence.
 - Contributors should address review feedback before merging.
@@ -143,14 +162,27 @@ Jira is the primary project-management and task-tracking system.
 - GitHub Issues may be used for technical bugs, questions, enhancements, and development discussions.
 - Reference relevant Jira issue IDs in branch names, commits, and PR descriptions where applicable.
 
+### 5.1 Labels
+
+Label every GitHub issue and PR with one type and the area(s) it touches:
+
+| Kind | Labels |
+|---|---|
+| Type | `bug`, `enhancement`, `task`, `question`, `documentation` |
+| Area | `area: rtl`, `area: verification`, `area: flows`, `area: software`, `area: documentation` |
+| Triage | `help wanted`, `good first issue`, `duplicate`, `invalid`, `wontfix` |
+
+The issue templates set the type label automatically.
+
 ## 6. Directory Ownership
 
 The repository is organized into high-level functional areas.
 
 | Directory | Purpose |
 |---|---|
-| `rtl/` | Hardware design |
-| `verification/` | Verification infrastructure and testbenches |
+| `src/` | Hardware design (RTL that gets hardened) |
+| `test/` | Top-level cocotb test of the Tiny Tapeout top |
+| `verification/` | Verification infrastructure, testbenches and the `pe-verif` Docker image |
 | `software/` | ISA, assembler, toolchain, and programs |
 | `flows/` | ASIC implementation and tool-flow configuration |
 | `scripts/` | Automation and utility scripts |
@@ -163,7 +195,8 @@ Changes affecting multiple areas should be coordinated with the respective owner
 ## 7. General Guidelines
 
 - Keep changes focused and avoid unrelated modifications.
-- Do not commit generated files, temporary files, or build artifacts unless explicitly required.
+- Do not commit generated files, temporary files, or build artifacts unless explicitly required
+  (`.gitignore` covers the flow outputs: `runs/`, `tt/`, `tt_submission/`, venvs, waveforms).
 - Document important design decisions and interfaces.
 - Keep code and documentation consistent.
 - Communicate significant architectural or interface changes with the relevant owners.
