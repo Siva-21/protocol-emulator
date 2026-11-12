@@ -9,9 +9,19 @@ jobs:
         with:
           submodules: recursive
 
-      - name: Install iverilog
+      # Verilator (RTL simulation) and Icarus from OSS CAD Suite, pinned to a dated
+      # build. cocotb 2.x needs Verilator >= 5.036; this build has 5.055 (devel).
+      - name: Install OSS CAD Suite
+        uses: YosysHQ/setup-oss-cad-suite@v4
+        with:
+          version: '2026-11-10'
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+
+      # Verilator --trace-fst compiles the FST writer into the model: it needs the
+      # lz4 and zlib headers/libraries, which OSS CAD Suite does not ship.
+      - name: Install FST trace dependencies
         shell: bash
-        run: sudo apt-get update && sudo apt-get install -y iverilog
+        run: sudo apt-get update && sudo apt-get install -y liblz4-dev zlib1g-dev
 
       # Set Python up and install cocotb
       - name: Setup python
@@ -27,7 +37,7 @@ jobs:
         run: |
           cd test
           make clean
-          make
+          make -B
           # make will return success even if the tests fail, so check results.xml for failed tests
           python -m cocotb_tools.check_results results.xml
 

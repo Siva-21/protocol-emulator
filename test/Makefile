@@ -2,7 +2,13 @@
 # See https://docs.cocotb.org/en/stable/quickstart.html for more info
 
 # defaults
+# RTL runs default to Verilator. Gate-level runs stay on Icarus: Tiny Tapeout's
+# gl_test action installs only Icarus and runs `GATES=yes make`.
+ifeq ($(GATES),yes)
 SIM ?= icarus
+else
+SIM ?= verilator
+endif
 FST ?= -fst # Use more efficient FST format
 TOPLEVEL_LANG ?= verilog
 SRC_DIR = $(PWD)/../src
@@ -37,6 +43,11 @@ endif
 
 # Allow sharing configuration between design and testbench via `include`:
 COMPILE_ARGS 		+= -I$(SRC_DIR)
+
+# Verilator: tb.v has an initial block with a delay (#1) and dumps an FST waveform
+ifeq ($(SIM),verilator)
+EXTRA_ARGS += --timing --trace --trace-fst --trace-structs
+endif
 
 # Include the testbench sources:
 VERILOG_SOURCES += $(PWD)/tb.v

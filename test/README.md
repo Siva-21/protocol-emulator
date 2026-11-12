@@ -1,47 +1,31 @@
-# Sample testbench for a Tiny Tapeout project
+# Top-level test
 
-This is a sample testbench for a Tiny Tapeout project. It uses [cocotb](https://docs.cocotb.org/en/stable/) to drive the DUT and check the outputs.
-See below to get started or for more information, check the [website](https://tinytapeout.com/hdl/testing/).
-
-## Setting up
-
-1. Edit [Makefile](Makefile) and modify `PROJECT_SOURCES` to point to your Verilog files.
-2. Edit [tb.v](tb.v) and replace `tt_um_example` with your module name.
+A cocotb test for the Tiny Tapeout top `tt_um_protocol_emulator_placeholder`
+(`tb.v` wraps it; `test.py` drives it). It starts a 50 MHz clock, holds `rst_n`
+low for 10 cycles, releases it, waits 5 cycles, then checks that `uo_out` and
+`uio_oe` are 0 with no X/Z.
 
 ## How to run
 
-To run the RTL simulation:
-
 ```sh
-make -B
+make -B                # RTL, Verilator (default)
+make -B SIM=icarus     # RTL, Icarus
+make -B GATES=yes      # gate level, Icarus (needs gate_level_netlist.v, see below)
 ```
 
-To run gatelevel simulation, first harden your project and copy `../runs/wokwi/results/final/verilog/gl/{your_module_name}.v` to `gate_level_netlist.v`.
+For gate level, harden the design and copy the netlist to
+`test/gate_level_netlist.v` (for IHP: `runs/wokwi/final/nl/<top>.nl.v`). `PDK_ROOT`
+must point at the PDK (`$PDK_ROOT/ihp-sg13cmos5l/...`). Tiny Tapeout's CI does
+this automatically and runs `GATES=yes make` with Icarus.
 
-Then run:
+Requirements: `pip install -r requirements.txt` (cocotb 2.1.0); Verilator >= 5.036.
 
-```sh
-make -B GATES=yes
-```
+## Waveform
 
-If you wish to save the waveform in VCD format instead of FST format, edit tb.v to use `$dumpfile("tb.vcd");` and then run:
-
-```sh
-make -B FST=
-```
-
-This will generate `tb.vcd` instead of `tb.fst`.
-
-## How to view the waveform file
-
-Using GTKWave
+Every run writes `tb.fst` in this directory (`results.xml` holds the test
+results). View it with:
 
 ```sh
 gtkwave tb.fst tb.gtkw
-```
-
-Using Surfer
-
-```sh
 surfer tb.fst
 ```
