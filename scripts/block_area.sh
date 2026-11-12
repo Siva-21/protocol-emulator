@@ -55,7 +55,11 @@ missing_files() {
 	printf '%s' "$out"
 }
 
-tmp=$(mktemp -d); trap 'rm -rf "$tmp"' EXIT
+# Scratch dir inside the repo (runs/ is git-ignored), not /tmp: yowasp-yosys
+# (used in CI) maps /tmp to its own private sandbox directory, so files it
+# writes there (stat.json) would not be visible here.
+mkdir -p runs
+tmp=$(mktemp -d "$PWD/runs/block_area.XXXXXX"); trap 'rm -rf "$tmp"' EXIT
 
 if [ ! -f "$LIBERTY" ]; then
 	echo "ERROR: Liberty file not found: $LIBERTY (set LIBERTY=...)" >&2
