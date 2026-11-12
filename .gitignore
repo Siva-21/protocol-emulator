@@ -1,3 +1,22 @@
 # Temporary and OS files
 *~
 .DS_Store
+
+# Local Tiny Tapeout flow (scripts/harden_local.sh) -- all generated
+tt/
+runs/
+.venv*/
+tt_submission/
+src/user_config.json
+src/config_merged.json
+__pycache__/
+
+# Simulation outputs (test/)
+test/sim_build/
+test/results.xml
+test/gate_level_netlist.v
+*.vcd
+*.fst
+
+# Verification reports
+verification/reports/
