@@ -12,3 +12,4 @@ tb/<block>/
 - The top-level Tiny Tapeout test stays in `test/` (template layout); this
   directory is for the blocks under `src/<block>/`.
 - Output (`sim_build/`, `results.xml`, waveforms) is git-ignored.
+- Makefile template and steps: [docs/WORKFLOWS.md](../../docs/WORKFLOWS.md#block-cocotb-test).

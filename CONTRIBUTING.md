@@ -76,10 +76,12 @@ All changes must be submitted through Pull Requests (PRs) targeting `main`.
    scripts/check_rtl_frontend.sh
    scripts/lint_rtl.sh
    ```
-   For changes in `src/` or `test/`, also run the top-level test (`make -B -C test`);
+   For changes in `src/` or `test/`, also run the top-level test (`cd test && make -B`);
    see [README.md](README.md#running-the-flows-locally) for the other flows.
 3. Review your own changes.
-4. Stage and commit your changes with a descriptive commit message.
+4. Run `git status` and stage explicit paths (`git add <paths>`), not `git add .`,
+   so that no stray or generated file gets committed. Then commit with a
+   descriptive commit message.
 5. Rebase on the latest `main` (no merge commits from `main` into your branch).
 6. Push your branch to GitHub.
 
@@ -92,7 +94,8 @@ git switch -c feature/i2c-controller
 
 # Make your changes
 
-git add .
+git status
+git add src/i2c_controller/
 git commit -m "feat: add initial I2C controller"
 
 # Before pushing: checks, then rebase on the latest main

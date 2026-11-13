@@ -2,7 +2,10 @@
 
 A programmable protocol emulator ASIC for the Jane Street / Tiny Tapeout
 **IHP CMOS5L** shuttle (`ihp-sg13cmos5l`): **8x4 tiles**, **50 MHz**. A host
-talks to the chip over SPI; the chip emulates a target protocol on its I/O pins.
+(for example the demo board's microcontroller) loads programs and exchanges data
+with the chip over a 4-pin SPI link. Four programmable sub-cores and a small main
+core then drive and sample the remaining I/O pins to emulate serial and parallel
+protocols such as UART, SPI and I2C, in controller or target roles.
 Project metadata and pinout: [info.yaml](info.yaml), datasheet: [docs/info.md](docs/info.md).
 
 The design is in progress: the Tiny Tapeout top is currently a placeholder
@@ -16,7 +19,7 @@ The design is in progress: the Tiny Tapeout top is currently a placeholder
 | `test/` | top-level cocotb test of the Tiny Tapeout top ([test/README.md](test/README.md)) |
 | `verification/` | unit tests, formal, regressions, hardening probes, Docker image ([verification/README.md](verification/README.md)) |
 | `scripts/` | block checks (frontend, lint, area) and local hardening |
-| `docs/` | Tiny Tapeout datasheet ([docs/info.md](docs/info.md)) and project documentation |
+| `docs/` | Tiny Tapeout datasheet ([docs/info.md](docs/info.md)), [workflow guide](docs/WORKFLOWS.md) and project documentation |
 | `software/` | ISA, assembler and programs |
 | `flows/` | ASIC implementation and tool-flow configuration |
 | `info.yaml` | Tiny Tapeout project file: top module, source files, tiles, clock, pinout |
@@ -46,12 +49,14 @@ verification/docker/pe-shell.sh                        # shell, repo at /foss/de
 
 ## Running the flows locally
 
-Inside `pe-verif`, from the repo root:
+Inside `pe-verif`, from the repo root. Step-by-step guide for every flow
+(new block, formal, unit tests, hardening, GitHub): **[docs/WORKFLOWS.md](docs/WORKFLOWS.md)**.
+
 
 | Flow | Command |
 |---|---|
 | Block checks | `scripts/check_rtl_frontend.sh`, `scripts/lint_rtl.sh`, `scripts/block_area.sh` (area is informational) |
-| Top-level cocotb test | `make -B -C test` (Verilator), `make -B -C test SIM=icarus` |
+| Top-level cocotb test | `cd test && make -B` (Verilator), `cd test && make -B SIM=icarus` (`make -C test` does not work: the template Makefile uses `$PWD`) |
 | Local hardening (Tiny Tapeout IHP flow: harden, precheck, gate-level test, ~1.5 h) | `scripts/harden_local.sh` |
 | Harden one block via its probe top | `scripts/harden_local.sh --probe <block>` ([verification/probes/](verification/probes/README.md)) |
 | Unit tests, formal, regressions | see [verification/README.md](verification/README.md) |
