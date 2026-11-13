@@ -19,7 +19,7 @@ The design is in progress: the Tiny Tapeout top is currently a placeholder
 | `test/` | top-level cocotb test of the Tiny Tapeout top ([test/README.md](test/README.md)) |
 | `verification/` | unit tests, formal, regressions, hardening probes, Docker image ([verification/README.md](verification/README.md)) |
 | `scripts/` | block checks (frontend, lint, area) and local hardening |
-| `docs/` | Tiny Tapeout datasheet ([docs/info.md](docs/info.md)), [workflow guide](docs/WORKFLOWS.md) and project documentation |
+| `docs/` | Tiny Tapeout datasheet ([docs/info.md](docs/info.md)), [workflow guide](docs/WORKFLOWS.md), [toolchain](docs/toolchain.md) and project documentation |
 | `software/` | ISA, assembler and programs |
 | `flows/` | ASIC implementation and tool-flow configuration |
 | `info.yaml` | Tiny Tapeout project file: top module, source files, tiles, clock, pinout |
@@ -40,7 +40,8 @@ The design is in progress: the Tiny Tapeout top is currently a placeholder
 
 Everything runs in the **pe-verif** Docker image (IIC-OSIC-TOOLS plus the
 verification extras and the Tiny Tapeout CI PDK). Contents, build and start
-scripts: [verification/docker/README.md](verification/docker/README.md).
+scripts: [verification/docker/README.md](verification/docker/README.md); versions,
+CI comparison and the checks behind them: [docs/toolchain.md](docs/toolchain.md).
 
 ```bash
 docker build -t pe-verif:2026.10 verification/docker   # once, ~25 GB disk

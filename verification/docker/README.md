@@ -30,6 +30,9 @@ KLayout, Magic, Netgen, OpenROAD and the IHP PDKs in `/foss/pdks`. Added:
 | ciel | 3.2.0 (base: 2.6.1) | pip, in place | required by librelane dev4 (temporary) |
 | CI PDK `ihp-sg13` | `89d42ee6d2fd9b50b86a1aada6fee6673c3e6008` in `/foss/pdks-ci` (`$PDK_ROOT_CI`) | ciel-releases | the PDK version TT CI uses; offline hardening (temporary) |
 
+Full version tables (base and additions), the comparison with Tiny Tapeout CI and
+the local hardening/precheck checks: [docs/toolchain.md](../../docs/toolchain.md).
+
 Every other package of the base is pinned to its installed version during the
 build (pip constraints file), so nothing else changes. The temporary block
 (librelane, ciel, CI PDK) goes away once an IIC-OSIC-TOOLS release ships
@@ -55,8 +58,11 @@ docker build -t pe-verif:2026.10 verification/docker
 
 Both scripts mount `$DESIGNS` (default `$HOME/edatools/designs`) at
 `/foss/designs` and run as your UID/GID, so files you write there stay yours.
-This repo is expected below `$DESIGNS`. All settings are variables at the top of
-each script and can be overridden from the environment (`DESIGNS`, `IMAGE`, ...).
+This repo is expected below `$DESIGNS`. Both set `PDK=ihp-sg13cmos5l` in the
+container (the base defaults to ihp-sg13g2); the image derives `PDKPATH`,
+`STD_CELL_LIBRARY`, `KLAYOUT_PATH` and `SPICE_USERINIT_DIR` from it, so no personal
+`.designinit` is needed. All settings are variables at the top of each script and
+can be overridden from the environment (`DESIGNS`, `IMAGE`, `PDK`, ...).
 
 Shell (removed on exit; a second call joins the open shell):
 

@@ -20,6 +20,10 @@ set -euo pipefail
 DESIGNS="${DESIGNS:-$HOME/edatools/designs}"
 # After the first GHCR publish: IMAGE=ghcr.io/siva-21/pe-verif:2026.10
 IMAGE="${IMAGE:-pe-verif:2026.10}"
+# PDK for the session. The image defaults to ihp-sg13g2; its startup derives
+# PDKPATH, STD_CELL_LIBRARY, KLAYOUT_PATH and SPICE_USERINIT_DIR from $PDK
+# (under $PDK_ROOT=/foss/pdks), so no personal $DESIGNS/.designinit is needed.
+PDK="${PDK:-ihp-sg13cmos5l}"
 WEB_PORT="${WEB_PORT:-8080}"
 PASSWORD_FILE="${PASSWORD_FILE:-$HOME/edatools/.vnc_password}"
 CONTAINER_NAME="${CONTAINER_NAME:-pe-verif_xvnc_uid_$(id -u)}"
@@ -84,6 +88,7 @@ else
 		--security-opt seccomp=unconfined \
 		-p "127.0.0.1:${WEB_PORT}:80" \
 		-e VNC_PW \
+		-e "PDK=$PDK" \
 		-e "XKB_KEYBOARD_LAYOUT=${XKB_KEYBOARD_LAYOUT:-us}" \
 		-e "XKB_KEYBOARD_VARIANT=${XKB_KEYBOARD_VARIANT:-}" \
 		-v "$DESIGNS:/foss/designs:rw" \
