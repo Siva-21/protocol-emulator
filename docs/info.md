@@ -6,8 +6,10 @@ talks to it over a 4-wire SPI link (mode 0, bytes MSB-first). Through that link 
 host reads and writes the chip's internal registers, which configure and drive the
 protocol engines on the `protocol in/out/io` pins.
 
-**Design in progress:** this version is a placeholder top with all outputs tied low.
-The host link and protocol engines are not included yet.
+**Design in progress:** this version is a placeholder top. While `ena` is high it
+registers `ui_in XOR uio_in` onto `uo_out` (so every input is used); `uio` is unused
+(all inputs, `uio_out` and `uio_oe` driven low). The host link and protocol engines
+are not included yet.
 
 ### Host link pins
 
@@ -22,7 +24,8 @@ The host link and protocol engines are not included yet.
 
 ## How to test
 
-Not testable yet: the placeholder drives every output low.
+Not functional yet. With `ena` high and `rst_n` released, `uo_out` shows
+`ui_in XOR uio_in` one clock later; after reset it is 0.
 
 ## External hardware
 

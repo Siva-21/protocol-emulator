@@ -1,5 +1,7 @@
-# Temporary and OS files
+# Temporary, editor and OS files
 *~
+*.swp
+*.swo
 .DS_Store
 
 # Local Tiny Tapeout flow (scripts/harden_local.sh) -- all generated

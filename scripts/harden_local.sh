@@ -142,7 +142,9 @@ tt_env() {
 	cd "$WORK"
 	export PDK PDK_ROOT=$PDK_ROOT_CI
 	export PATH=/foss/tools/openroad-librelane/bin:$PATH
-	export PYTHONPATH=${PYTHONPATH:-}:$(site "$VENV_TT")
+	local tt_site
+	tt_site=$(site "$VENV_TT")
+	export PYTHONPATH=${PYTHONPATH:-}:$tt_site
 }
 stage_user_config() { (tt_env; ./tt/tt_tool.py --create-user-config --pdk "$PDK"); }
 stage_harden()      { (tt_env; ./tt/tt_tool.py --harden --pdk "$PDK" --no-docker); }
@@ -155,7 +157,8 @@ stage_precheck() {
 		cd "$WORK/tt/precheck"
 		# shellcheck disable=SC1091
 		. "$VENV_PRECHECK/bin/activate"
-		export PYTHONPATH=$(site "$VENV_PRECHECK"):${PYTHONPATH:-}
+		precheck_site=$(site "$VENV_PRECHECK")
+		export PYTHONPATH=$precheck_site:${PYTHONPATH:-}
 		export PDK PDK_ROOT=$PDK_VERSION_DIR
 		python precheck.py --gds "$gds" --tech "$PDK"   # absolute path, as CI
 	)
