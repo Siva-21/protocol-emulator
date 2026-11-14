@@ -120,17 +120,32 @@ verilator --lint-only -Wall --top-module <block> $(sed 's/#.*//' src/<block>/<bl
 
 ## GitHub checks
 
-1. **What runs:** every push to any branch runs `rtl-checks`, `test`, `docs` and
+1. **What runs:** every push to any branch starts `rtl-checks`, `test`, `docs` and
    `gds` (incl. precheck and gate-level test). `rtl-checks` also runs on
    `pull_request`. Details: [Scripts and workflows](#scripts-and-workflows).
-2. **Where:** the PR's *Checks* tab, or the repo's *Actions* tab → workflow → run.
+2. **Skip rule (`test`, `gds`):** a first job, *changes*, checks which paths the
+   push changed. The heavy jobs (*test*; *gds* and with it *precheck*, *gl_test*,
+   *viewer*) run only if it touched `src/**`, `test/**`, `info.yaml`,
+   `scripts/**`, `verification/docker/**` or `.github/workflows/**`, and always
+   on `main`. A docs-only push therefore finishes in a minute. **"Skipped" counts
+   as passing** for required checks. `rtl-checks` and `docs` always run. (No
+   workflow-level `paths:` filter on purpose: a workflow that never starts never
+   reports, and a required check would wait forever.)
+3. **Cancellation (`test`, `gds`):** a newer push to the same branch cancels the
+   still-running `test` / `gds` run of the older one, which shows as *Cancelled*;
+   only the latest push counts. Never on `main`, where every run completes.
+4. **Unlisted RTL:** `scripts/check_rtl_frontend.sh` (and the `rtl-checks`
+   *frontend* job) fails if a `*.v` / `*.sv` file under `src/` is in no
+   `src/<block>/<block>.f` and not in `info.yaml` `source_files`, and prints its
+   path. Add it to the right list, or delete it.
+5. **Where:** the PR's *Checks* tab, or the repo's *Actions* tab → workflow → run.
    Each run has a *Summary* page (block area table, linter output, routing and cell
    stats, precheck results) and, at the bottom, **Artifacts** to download:
    `test-results` (tb.fst, results.xml), `tt_submission` (GDS, OAS, LEF, netlist),
    `GDS_logs`, `gds_render` (PNG), `precheck_reports`, `gatelevel_test_results`.
-3. **Re-run:** run page → *Re-run jobs* (all or failed). Needs **write access** to
+6. **Re-run:** run page → *Re-run jobs* (all or failed). Needs **write access** to
    the repo; without it, ask a maintainer, or push a new commit.
-4. **Branch protection on `main`:** no direct pushes; merge only through a PR with
+7. **Branch protection on `main`:** no direct pushes; merge only through a PR with
    all required checks green and one approval from someone other than the author
    (set by repo admins in *Settings → Rules*).
 
@@ -447,8 +462,10 @@ systemd-inhibit --what=sleep:handle-lid-switch --why="local hardening" \
 
 ### Real top: `gds` workflow
 
-1. Runs on **every push**, any branch: *gds* (LibreLane via `tt-gds-action`,
-   `ihp-sg13cmos5l`), then *precheck*, *gl_test* and *viewer* in parallel.
+1. Runs on **every push** that touches the design or its flow (always on `main`;
+   see the [skip rule](#github-checks)): *gds* (LibreLane via `tt-gds-action`,
+   `ihp-sg13cmos5l`), then *precheck*, *gl_test* and *viewer* in parallel. A newer
+   push to the same branch cancels the running one.
    Expect about the local runtime (an hour or more for 8x4).
 2. Results: *Actions → gds → run*. The *Summary* shows linter output, Yosys
    warnings, routing and cell-usage stats, precheck results and the GDS preview.
@@ -504,7 +521,7 @@ this branch, never open a PR from it; delete it afterwards.**
 
 | Script | Purpose |
 |---|---|
-| `scripts/check_rtl_frontend.sh` | read every block and the TT top with Yosys's built-in reader (`-noautowire`), `hierarchy -check`; fails on implicit nets |
+| `scripts/check_rtl_frontend.sh` | read every block and the TT top with Yosys's built-in reader (`-noautowire`), `hierarchy -check`; fails on implicit nets and on `src/` RTL listed nowhere |
 | `scripts/lint_rtl.sh` | `verilator --lint-only -Wall` per block and the TT top |
 | `scripts/block_area.sh` | per block: cells, flip-flops, area (IHP sg13cmos5l, typ 1.20 V 25 °C); informational |
 | `scripts/harden_local.sh` | local TT flow: harden, submission, precheck, gate-level test; `--probe <block>` for one block |
@@ -514,9 +531,9 @@ this branch, never open a PR from it; delete it afterwards.**
 | Workflow | Trigger | Jobs / content |
 |---|---|---|
 | `rtl-checks` | push, pull_request, manual | frontend (yowasp-yosys 0.69), lint (Verilator), block-area (job summary) |
-| `test` | push, manual | top-level cocotb test (Verilator, RTL); artifact `test-results` |
+| `test` | push, manual; skipped without design changes (not on `main`) | top-level cocotb test (Verilator, RTL); artifact `test-results` |
 | `docs` | push, manual | TT datasheet from `docs/info.md` |
-| `gds` | push, manual | gds → precheck, gl_test, viewer (GitHub Pages) |
+| `gds` | push, manual; skipped without design changes (not on `main`) | gds → precheck, gl_test, viewer (GitHub Pages) |
 | `fpga` | manual only (push disabled) | TT template FPGA bitstream, not used |
 
 ## Not yet available

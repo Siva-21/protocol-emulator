@@ -4,6 +4,8 @@
 #   read_verilog -defer -noautowire -sv <file>...; hierarchy -check -top <top>
 # Units: each src/<block>/<block>.f (top module <block>) plus the Tiny Tapeout
 # top from info.yaml. Prints PASS/FAIL per unit; exits 1 if any unit fails.
+# Also fails if a *.v / *.sv file under src/ is in no unit (forgotten in the
+# .f / info.yaml, so neither CI nor hardening would see it).
 #
 #   scripts/check_rtl_frontend.sh            (env: YOSYS=yosys)
 set -euo pipefail
@@ -79,6 +81,23 @@ while IFS=$'\t' read -r name top files; do
 		fails=$((fails + 1))
 	fi
 done <<< "$units"
+
+# Every RTL file under src/ must be listed by some unit.
+declare -A listed=()
+while IFS=$'\t' read -r _ _ files; do
+	for f in $files; do listed["$(realpath -m --relative-to=. "$f")"]=1; done
+done <<< "$units"
+unlisted=()
+while IFS= read -r f; do
+	[ -n "${listed[$f]:-}" ] || unlisted+=("$f")
+done < <(find src -type f \( -name '*.v' -o -name '*.sv' \) | sort)
+if [ "${#unlisted[@]}" -gt 0 ]; then
+	echo "FAIL  unlisted RTL (in no src/<block>/<block>.f nor info.yaml source_files):"
+	printf '      %s\n' "${unlisted[@]}"
+	fails=$((fails + 1))
+else
+	echo "PASS  every RTL file under src/ is listed"
+fi
 
 echo "$(wc -l <<< "$units") unit(s), $fails failed"
 [ "$fails" -eq 0 ]

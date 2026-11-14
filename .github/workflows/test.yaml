@@ -1,7 +1,38 @@
 name: test
 on: [push, workflow_dispatch]
+
+# A newer push to the same branch cancels the running workflow; never on main.
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: ${{ github.ref != 'refs/heads/main' }}
+
 jobs:
+  # Did this push touch the design or its flow? Heavy jobs below skip otherwise
+  # (a skipped job counts as passing). On main they always run.
+  changes:
+    runs-on: ubuntu-24.04
+    outputs:
+      design: ${{ steps.filter.outputs.design }}
+    steps:
+      - name: checkout repo
+        uses: actions/checkout@v6
+
+      - name: Filter changed paths
+        id: filter
+        uses: dorny/paths-filter@v4.0.3
+        with:
+          filters: |
+            design:
+              - 'src/**'
+              - 'test/**'
+              - 'info.yaml'
+              - 'scripts/**'
+              - 'verification/docker/**'
+              - '.github/workflows/**'
+
   test:
+    needs: changes
+    if: github.ref == 'refs/heads/main' || needs.changes.outputs.design == 'true'
     runs-on: ubuntu-24.04
     steps:
       - name: Checkout repo

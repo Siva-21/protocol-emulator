@@ -74,7 +74,10 @@ Hardening output: `runs/wokwi/`, the submission (GDS, netlist) in
 
 ## GitHub checks
 
-These run on every push (and so on every PR branch); all must be green before merging:
+These run on every push (and so on every PR branch); all must be green before merging.
+`test` and `gds` skip their heavy jobs when a push changes no design or flow files
+("Skipped" counts as passing; on `main` they always run), and a newer push cancels
+their older run on the same branch. Details: [docs/WORKFLOWS.md](docs/WORKFLOWS.md#github-checks).
 
 | Workflow | What it checks |
 |---|---|

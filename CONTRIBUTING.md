@@ -123,7 +123,14 @@ git push -u origin feature/i2c-controller        # after a rebase of a pushed br
 
 1. All required GitHub checks must be green (`rtl-checks`, `test`, `docs`, `gds`
    incl. precheck and gate-level test; see [README.md](README.md#github-checks)),
-   and at least one approval is required before merging.
+   and at least one approval is required before merging. Details:
+   [docs/WORKFLOWS.md](docs/WORKFLOWS.md#github-checks).
+   - `test` and `gds` skip their heavy jobs when a push changes no design or flow
+     files (always run on `main`); **"Skipped" counts as passing**.
+   - A newer push to your branch cancels the still-running `test` / `gds` run of
+     the older one; only the latest push counts.
+   - `scripts/check_rtl_frontend.sh` fails on any `*.v` / `*.sv` under `src/` that
+     is in no `<block>.f` and not in `info.yaml`: list every RTL file you add.
 2. Reviewers should check correctness, readability, maintainability, and relevant verification evidence.
 3. Address review feedback and resolve all review conversations.
 4. Once approved, merge using **Squash and merge**.
