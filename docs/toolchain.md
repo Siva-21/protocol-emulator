@@ -58,6 +58,11 @@ run as root, then switch back.
   (no `docker tag` step; the start scripts default to this name).
 - Labels: `pe-verif.base-tag=2026.10`, `pe-verif.build-date=2026-11-12`,
   `org.opencontainers.image.source=https://github.com/Siva-21/protocol-emulator` (links the GHCR package to the repo).
+- Tag policy: the tag is the base release (`2026.10` = built on `iic-osic-tools:2026.10`).
+  Once published, a tag never changes: **every Dockerfile change gets a new tag**
+  (e.g. `2026.10-2`), and the `IMAGE` default in `pe-shell.sh` / `pe-desktop.sh` moves
+  with it. Details: [verification/docker/README.md](../verification/docker/README.md#tag-policy).
+- Current image: ID `f0583a948b93` (built 2026-11-14, = the tag above).
 - Local build history: ID `f0583a948b93` (2026-11-14, + source label, same tag);
   `de529115d1ce` (2026-11-12, + liblz4-dev);
   earlier `89cf47360f33` (2026-11-10, LibreLane block) and `5cc0077b598a`.
