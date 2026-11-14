@@ -2,12 +2,16 @@
 # See https://docs.cocotb.org/en/stable/quickstart.html for more info
 
 # defaults
-# RTL runs default to Verilator. Gate-level runs stay on Icarus: Tiny Tapeout's
-# gl_test action installs only Icarus and runs `GATES=yes make`.
+# RTL runs default to Verilator, or Icarus if Verilator is not on PATH.
+# Gate-level runs stay on Icarus. Tiny Tapeout's gl_test action installs only
+# Icarus and runs `make clean` (without GATES=yes), then `GATES=yes make`, so
+# the fallback keeps `make clean` working there.
 ifeq ($(GATES),yes)
 SIM ?= icarus
-else
+else ifneq ($(shell command -v verilator 2>/dev/null),)
 SIM ?= verilator
+else
+SIM ?= icarus
 endif
 FST ?= -fst # Use more efficient FST format
 TOPLEVEL_LANG ?= verilog

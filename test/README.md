@@ -8,7 +8,7 @@ low for 10 cycles, releases it, waits 5 cycles, then checks that `uo_out` and
 ## How to run
 
 ```sh
-make -B                # RTL, Verilator (default)
+make -B                # RTL, Verilator (default; Icarus if verilator is not on PATH)
 make -B SIM=icarus     # RTL, Icarus
 make -B GATES=yes      # gate level, Icarus (needs gate_level_netlist.v, see below)
 ```
@@ -16,7 +16,8 @@ make -B GATES=yes      # gate level, Icarus (needs gate_level_netlist.v, see bel
 For gate level, harden the design and copy the netlist to
 `test/gate_level_netlist.v` (for IHP: `runs/wokwi/final/nl/<top>.nl.v`). `PDK_ROOT`
 must point at the PDK (`$PDK_ROOT/ihp-sg13cmos5l/...`). Tiny Tapeout's CI does
-this automatically and runs `GATES=yes make` with Icarus.
+this automatically: it runs `make clean`, then `GATES=yes make`, on a runner
+with only Icarus (hence the Icarus fallback for RTL runs).
 
 Requirements: `pip install -r requirements.txt` (cocotb 2.1.0); Verilator >= 5.036.
 
