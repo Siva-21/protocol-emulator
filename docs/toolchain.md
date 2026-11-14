@@ -7,7 +7,7 @@ step-by-step flows are in [WORKFLOWS.md](WORKFLOWS.md).
 
 Contents:
 [Base image](#base-image-iic-osic-tools-202610) ·
-[pe-verif additions](#derived-image-pe-verif202610) ·
+[pe-verif additions](#derived-image-ghcriosiva-21pe-verif202610) ·
 [Environment](#environment-pdk) ·
 [LibreLane / PDK bridge](#librelane-and-pdk-bridge-tiny-tapeout-ci-parity) ·
 [Local hardening](#local-hardening-check) ·
@@ -46,7 +46,7 @@ Tool versions in the base, probed 2026-11-10 inside the container (uid 1000, not
 | pytest-xdist | ❌ → added | — | |
 | cocotb-coverage | ❌ → added | — | |
 
-## Derived image: pe-verif:2026.10
+## Derived image: ghcr.io/siva-21/pe-verif:2026.10
 
 [verification/docker/Dockerfile](../verification/docker/Dockerfile) on top of the
 base; the base itself is unchanged. Default user `1000:1000` (as the base); installs

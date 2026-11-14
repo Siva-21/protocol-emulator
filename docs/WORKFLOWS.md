@@ -367,7 +367,7 @@ the lid switch inhibited:
 ```bash
 # on the host, from the repo root (append --probe <block> to the script for a probe)
 systemd-inhibit --what=sleep:handle-lid-switch --why="local hardening" \
-  docker run --rm -u "$(id -u):$(id -g)" -v "$HOME/edatools/designs:/foss/designs:rw" \
+  docker run --rm -u "$(id -u):$(id -g)" -v "${DESIGNS:-$HOME/edatools/designs}:/foss/designs:rw" \
   -w /foss/designs/protocol-emulator ghcr.io/siva-21/pe-verif:2026.10 \
   -s bash -c 'TMPDIR=$PWD/runs scripts/harden_local.sh'
 ```
