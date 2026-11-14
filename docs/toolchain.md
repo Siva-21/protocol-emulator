@@ -54,8 +54,12 @@ run as root, then switch back.
 
 - Size: 18.68 GB (`docker images`). Layers added: apt 22 MB (z3, liblz4-dev),
   bitwuzla 4.5 MB, pip 1.5 MB, librelane/ciel 4.1 MB, CI PDK 1.03 GB (982 MB on disk).
-- Labels: `pe-verif.base-tag=2026.10`, `pe-verif.build-date=2026-11-12`.
-- Local build history: ID `de529115d1ce` (2026-11-12, + liblz4-dev, same tag);
+- Name: `ghcr.io/siva-21/pe-verif:2026.10`; get it with `docker pull ghcr.io/siva-21/pe-verif:2026.10`
+  (no `docker tag` step; the start scripts default to this name).
+- Labels: `pe-verif.base-tag=2026.10`, `pe-verif.build-date=2026-11-12`,
+  `org.opencontainers.image.source=https://github.com/Siva-21/protocol-emulator` (links the GHCR package to the repo).
+- Local build history: ID `f0583a948b93` (2026-11-14, + source label, same tag);
+  `de529115d1ce` (2026-11-12, + liblz4-dev);
   earlier `89cf47360f33` (2026-11-10, LibreLane block) and `5cc0077b598a`.
 
 | Added | Version | Source | smtbmc usable? |

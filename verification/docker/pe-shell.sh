@@ -13,8 +13,8 @@
 set -euo pipefail
 
 DESIGNS="${DESIGNS:-$HOME/edatools/designs}"
-# After the first GHCR publish: IMAGE=ghcr.io/siva-21/pe-verif:2026.10
-IMAGE="${IMAGE:-pe-verif:2026.10}"
+# Published on GHCR; a local build under the same name works too (README.md).
+IMAGE="${IMAGE:-ghcr.io/siva-21/pe-verif:2026.10}"
 # PDK for the session. The image defaults to ihp-sg13g2; its startup derives
 # PDKPATH, STD_CELL_LIBRARY, KLAYOUT_PATH and SPICE_USERINIT_DIR from $PDK
 # (under $PDK_ROOT=/foss/pdks), so no personal $DESIGNS/.designinit is needed.
@@ -24,8 +24,9 @@ CONTAINER_USER="${CONTAINER_USER:-$(id -u)}"
 CONTAINER_GROUP="${CONTAINER_GROUP:-$(id -g)}"
 
 if ! docker image inspect "$IMAGE" > /dev/null 2>&1; then
-	echo "[ERROR] Image $IMAGE not found. Build it (from the repo root) with:" >&2
-	echo "        docker build -t $IMAGE verification/docker" >&2
+	echo "[ERROR] Image $IMAGE not found. Pull it with:" >&2
+	echo "        docker pull $IMAGE" >&2
+	echo "        or build it (from the repo root): docker build -t $IMAGE verification/docker" >&2
 	exit 1
 fi
 if [ ! -d "$DESIGNS" ]; then

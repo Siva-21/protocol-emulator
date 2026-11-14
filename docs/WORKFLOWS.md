@@ -2,7 +2,8 @@
 
 Step-by-step guide for every flow in this repo. It assumes:
 
-- the **pe-verif** image is built ([verification/docker/README.md](../verification/docker/README.md)),
+- the **pe-verif** image is pulled (`docker pull ghcr.io/siva-21/pe-verif:2026.10`) or built
+  ([verification/docker/README.md](../verification/docker/README.md)),
 - the repo is cloned below `$DESIGNS` (default `~/edatools/designs/protocol-emulator`),
 - commands run **inside pe-verif from the repo root** unless a step says otherwise:
 
@@ -343,7 +344,7 @@ the lid switch inhibited:
 # on the host, from the repo root (append --probe <block> to the script for a probe)
 systemd-inhibit --what=sleep:handle-lid-switch --why="local hardening" \
   docker run --rm -u "$(id -u):$(id -g)" -v "$HOME/edatools/designs:/foss/designs:rw" \
-  -w /foss/designs/protocol-emulator pe-verif:2026.10 \
+  -w /foss/designs/protocol-emulator ghcr.io/siva-21/pe-verif:2026.10 \
   -s bash -c 'TMPDIR=$PWD/runs scripts/harden_local.sh'
 ```
 

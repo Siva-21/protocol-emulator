@@ -46,13 +46,23 @@ Default user `1000:1000`, as in the base.
   locally; a published image will be x86_64 only.
 - **~25 GB free disk**: the image is 18.7 GB, plus build headroom.
 
-## Build
+## Get the image
 
-From the repo root:
+Pull it from GHCR (x86_64; ~4.5 GB download, 18.7 GB unpacked). The start
+scripts use this name by default, so no `docker tag` step is needed:
 
 ```bash
-docker build -t pe-verif:2026.10 verification/docker
+docker pull ghcr.io/siva-21/pe-verif:2026.10
 ```
+
+Or build it yourself from the repo root under the same name:
+
+```bash
+docker build -t ghcr.io/siva-21/pe-verif:2026.10 verification/docker
+```
+
+The Dockerfile's `org.opencontainers.image.source` label links the GHCR package
+to this repository.
 
 ## Start
 
@@ -88,8 +98,9 @@ verification/docker/pe-desktop.sh stop    # stop and remove
 
 ## Tag policy
 
-- The tag is the base release: `pe-verif:2026.10` is built on `iic-osic-tools:2026.10`.
+- The tag is the base release: `ghcr.io/siva-21/pe-verif:2026.10` is built on `iic-osic-tools:2026.10`.
 - **Until the first GHCR publish**: a rebuild keeps the same tag.
 - **After the first publish** (`ghcr.io/siva-21/pe-verif:2026.10`): every
   Dockerfile change bumps the tag (e.g. `2026.10-2`), so a published tag never
-  changes. Set `IMAGE=ghcr.io/siva-21/pe-verif:<tag>` for the start scripts.
+  changes. Bump the `IMAGE` default in `pe-shell.sh` and `pe-desktop.sh` with it
+  (or set `IMAGE=ghcr.io/siva-21/pe-verif:<tag>` for a one-off).

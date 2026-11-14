@@ -99,3 +99,7 @@ RUN set -eux; \
 
 # Back to the base image's default user.
 USER 1000:1000
+
+# Links the GHCR package (ghcr.io/siva-21/pe-verif) to its repository. Kept as
+# the last instruction so adding it reuses every cached layer above.
+LABEL org.opencontainers.image.source="https://github.com/Siva-21/protocol-emulator"
