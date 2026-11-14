@@ -130,7 +130,8 @@ verilator --lint-only -Wall --top-module <block> $(sed 's/#.*//' src/<block>/<bl
    on `main`. A docs-only push therefore finishes in a minute. **"Skipped" counts
    as passing** for required checks. `rtl-checks` and `docs` always run. (No
    workflow-level `paths:` filter on purpose: a workflow that never starts never
-   reports, and a required check would wait forever.)
+   reports, and a required check would wait forever.) A manual *Run workflow*
+   (Actions → `test` / `gds` → *Run workflow*) always runs the full jobs.
 3. **Cancellation (`test`, `gds`):** a newer push to the same branch cancels the
    still-running `test` / `gds` run of the older one, which shows as *Cancelled*;
    only the latest push counts. Never on `main`, where every run completes.

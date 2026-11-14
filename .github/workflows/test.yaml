@@ -8,7 +8,7 @@ concurrency:
 
 jobs:
   # Did this push touch the design or its flow? Heavy jobs below skip otherwise
-  # (a skipped job counts as passing). On main they always run.
+  # (a skipped job counts as passing). On main and on manual runs they always run.
   changes:
     runs-on: ubuntu-24.04
     outputs:
@@ -32,7 +32,7 @@ jobs:
 
   test:
     needs: changes
-    if: github.ref == 'refs/heads/main' || needs.changes.outputs.design == 'true'
+    if: github.ref == 'refs/heads/main' || github.event_name == 'workflow_dispatch' || needs.changes.outputs.design == 'true'
     runs-on: ubuntu-24.04
     steps:
       - name: Checkout repo
