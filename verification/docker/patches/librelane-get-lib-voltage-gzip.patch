@@ -14,7 +14,9 @@ compressed bytes and fails identically (an io.StringIO fails outright with
 "UnsupportedOperation: fileno"). The gzipped file has to be materialized.
 
 Reported upstream as https://github.com/librelane/librelane/issues/627
-Against librelane 3.1.0.dev3. Drop this once the pinned release carries a fix.
+Written against librelane 3.1.0.dev3; still needed in 3.1.0.dev4 (the version
+the Dockerfile pins), where it applies with a 5-line offset. Drop this once the
+pinned release carries a fix.
 ---
 --- librelane/common/toolbox.py	2026-08-18 15:39:58.909129817 +0200
 +++ librelane/common/toolbox.py	2026-08-18 15:39:58.942702567 +0200

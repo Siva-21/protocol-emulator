@@ -62,8 +62,10 @@ run as root, then switch back.
   Once published, a tag never changes: **every Dockerfile change gets a new tag**
   (e.g. `2026.10-2`), and the `IMAGE` default in `pe-shell.sh` / `pe-desktop.sh` moves
   with it. Details: [verification/docker/README.md](../verification/docker/README.md#tag-policy).
-- Current image: ID `f0583a948b93` (built 2026-11-14, = the tag above).
-- Local build history: ID `f0583a948b93` (2026-11-14, + source label, same tag);
+- Current image: ID `ddfd7c481d02` (built 2026-11-14, = the tag above; not yet
+  published to GHCR, so rebuilds still keep the tag).
+- Local build history: ID `ddfd7c481d02` (2026-11-14, patch header text only, same tag);
+  `f0583a948b93` (2026-11-14, + source label);
   `de529115d1ce` (2026-11-12, + liblz4-dev);
   earlier `89cf47360f33` (2026-11-10, LibreLane block) and `5cc0077b598a`.
 
