@@ -1,0 +1,102 @@
+name: rtl-checks
+# Fast per-block RTL checks (seconds to minutes, no hardening):
+#   frontend    scripts/check_rtl_frontend.sh  Yosys built-in reader, as LibreLane uses it
+#   lint        scripts/lint_rtl.sh            Verilator -Wall
+#   block-area  scripts/block_area.sh          informational cell/area table (job summary)
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+env:
+  # Yosys 0.69 = the Yosys inside Tiny Tapeout CI's LibreLane (3.1.0.dev4).
+  YOWASP_YOSYS: "yowasp-yosys~=0.69.0"
+  # ihp-sg13 PDK pinned by librelane 3.1.0.dev4 (pdk_hashes.yaml), as in tt-gds-action.
+  CI_IHP_PDK_HASH: 89d42ee6d2fd9b50b86a1aada6fee6673c3e6008
+
+jobs:
+  frontend:
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v6
+
+      - name: Setup python
+        uses: actions/setup-python@v6
+        with:
+          python-version: '3.11'
+
+      - name: Install Python packages
+        run: pip install "$YOWASP_YOSYS" pyyaml
+
+      - name: Check RTL with the Yosys frontend
+        run: YOSYS=yowasp-yosys scripts/check_rtl_frontend.sh
+
+  lint:
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v6
+
+      # Same pinned OSS CAD Suite build as test.yaml.
+      - name: Install OSS CAD Suite
+        uses: YosysHQ/setup-oss-cad-suite@v4
+        with:
+          version: '2026-11-10'
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+
+      # After OSS CAD Suite, so this Python (not the suite's) is first on PATH.
+      - name: Setup python
+        uses: actions/setup-python@v6
+        with:
+          python-version: '3.11'
+
+      - name: Install Python packages
+        run: pip install pyyaml
+
+      - name: Lint RTL with Verilator
+        run: scripts/lint_rtl.sh
+
+  block-area:
+    runs-on: ubuntu-24.04
+    env:
+      PDK_ROOT: ${{ github.workspace }}/.pdk
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v6
+
+      - name: Setup python
+        uses: actions/setup-python@v6
+        with:
+          python-version: '3.11'
+
+      - name: Install Python packages
+        run: pip install "$YOWASP_YOSYS" pyyaml ciel
+
+      - name: Cache PDK
+        id: pdk-cache
+        uses: actions/cache@v4
+        with:
+          path: ${{ env.PDK_ROOT }}
+          key: ciel-ihp-sg13-${{ env.CI_IHP_PDK_HASH }}
+
+      # Default data source (ciel-releases static web) and default libraries,
+      # as LibreLane fetches it at run time.
+      - name: Fetch PDK
+        if: steps.pdk-cache.outputs.cache-hit != 'true'
+        run: ciel fetch --pdk-root "$PDK_ROOT" --pdk-family ihp-sg13cmos5l "$CI_IHP_PDK_HASH"
+
+      - name: Block area
+        shell: bash   # explicit: adds -o pipefail, so a failure is not hidden by tee
+        run: |
+          LIBERTY="$PDK_ROOT/ciel/ihp-sg13/versions/$CI_IHP_PDK_HASH/ihp-sg13cmos5l/libs.ref/sg13cmos5l_stdcell/lib/sg13cmos5l_stdcell_typ_1p20V_25C.lib"
+          YOSYS=yowasp-yosys LIBERTY="$LIBERTY" scripts/block_area.sh | tee block_area.txt
+          {
+            echo "### Block area (informational, typ 1.20 V 25 °C)"
+            echo '```'
+            cat block_area.txt
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"

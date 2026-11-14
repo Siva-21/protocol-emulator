@@ -1,3 +1,34 @@
-# Temporary and OS files
+# Temporary, editor and OS files
 *~
+*.swp
+*.swo
 .DS_Store
+
+# Local Tiny Tapeout flow (scripts/harden_local.sh) -- all generated
+tt/
+runs/
+.venv*/
+tt_submission/
+src/user_config.json
+src/config_merged.json
+__pycache__/
+
+# Simulation outputs, anywhere (test/, verification/tb/<block>/, ...).
+# Waveform save files (*.gtkw) stay tracked.
+**/sim_build/
+**/results.xml
+**/obj_dir/
+*.vvp
+.pytest_cache/
+*.log
+test/gate_level_netlist.v
+*.vcd
+*.fst
+
+# SymbiYosys work directories: every subdirectory of a block's formal folder
+# (verification/formal/<block>/<block>_<task>/). The .sby and *_props.sv
+# sources are files there, so they stay tracked.
+verification/formal/*/*/
+
+# Verification reports
+verification/reports/

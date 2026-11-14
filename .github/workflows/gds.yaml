@@ -1,0 +1,78 @@
+name: gds
+
+on:
+  push:
+  workflow_dispatch:
+
+# A newer push to the same branch cancels the running workflow; never on main.
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: ${{ github.ref != 'refs/heads/main' }}
+
+jobs:
+  # Did this push touch the design or its flow? Heavy jobs below skip otherwise
+  # (a skipped job counts as passing). On main and on manual runs they always run.
+  changes:
+    runs-on: ubuntu-24.04
+    outputs:
+      design: ${{ steps.filter.outputs.design }}
+    steps:
+      - name: checkout repo
+        uses: actions/checkout@v6
+
+      - name: Filter changed paths
+        id: filter
+        uses: dorny/paths-filter@v4.0.3
+        with:
+          filters: |
+            design:
+              - 'src/**'
+              - 'test/**'
+              - 'info.yaml'
+              - 'scripts/**'
+              - 'verification/docker/**'
+              - '.github/workflows/**'
+
+  # precheck, gl_test and viewer need gds, so they are skipped with it.
+  gds:
+    needs: changes
+    if: github.ref == 'refs/heads/main' || github.event_name == 'workflow_dispatch' || needs.changes.outputs.design == 'true'
+    runs-on: ubuntu-24.04
+    steps:
+      - name: checkout repo
+        uses: actions/checkout@v6
+        with:
+          submodules: recursive
+
+      - name: Build GDS
+        uses: TinyTapeout/tt-gds-action@ttihp27a
+        with:
+          pdk: ihp-sg13cmos5l # or ihp-sg13g2
+
+  precheck:
+    needs: gds
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Run Tiny Tapeout Precheck
+        uses: TinyTapeout/tt-gds-action/precheck@ttihp27a
+
+  gl_test:
+    needs: gds
+    runs-on: ubuntu-24.04
+    steps:
+      - name: checkout repo
+        uses: actions/checkout@v6
+        with:
+          submodules: recursive
+
+      - name: GL test
+        uses: TinyTapeout/tt-gds-action/gl_test@ttihp27a
+
+  viewer:
+    needs: gds
+    runs-on: ubuntu-24.04
+    permissions:
+      pages: write # to deploy to Pages
+      id-token: write # to verify the deployment originates from an appropriate source
+    steps:
+      - uses: TinyTapeout/tt-gds-action/viewer@ttihp27a
