@@ -44,9 +44,12 @@ scripts: [verification/docker/README.md](verification/docker/README.md); version
 CI comparison and the checks behind them: [docs/toolchain.md](docs/toolchain.md).
 
 ```bash
-docker build -t pe-verif:2026.10 verification/docker   # once, ~25 GB disk
-verification/docker/pe-shell.sh                        # shell, repo at /foss/designs/protocol-emulator
+docker pull ghcr.io/siva-21/pe-verif:2026.10   # once, ~25 GB disk (x86_64)
+verification/docker/pe-shell.sh                # shell, repo at /foss/designs/protocol-emulator
 ```
+
+The start scripts use that image name by default; building it locally instead is
+described in [verification/docker/README.md](verification/docker/README.md).
 
 ## Running the flows locally
 

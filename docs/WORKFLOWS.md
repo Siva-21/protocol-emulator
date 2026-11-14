@@ -203,6 +203,23 @@ Example below for a block with ports `clk`, `rst_n`, `en`, `count`, `wrap`.
    cd -
    ```
    (`-f` replaces the work folders of a previous run.)
+
+   **Task prefixes:** in a `.sby` file a line prefix selects tasks only if it is
+   **one** task name at the very start of the line: `bmc:` or `~bmc:` (every task
+   except `bmc`). Several names (`prove bmc:`), commas or indentation are not
+   recognised: the line is passed to Yosys as is and fails (e.g. `No such command:
+   prove`). For a group of tasks, put a tag after the task in `[tasks]` and use
+   the tag as the prefix:
+   ```ini
+   [tasks]
+   prove good
+   bmc   good
+   bug_bmc
+
+   [script]
+   good:    read_slang <block>.v <block>_props.sv --top <block>
+   bug_bmc: read_slang -DBUG <block>.v <block>_props.sv --top <block>
+   ```
 5. Results, in `verification/formal/<block>/<block>_<task>/`:
    - `status`: `PASS` / `FAIL` (exit code 0 / 2), `logfile.txt`: full log;
    - failing assertion: `engine_0/trace.vcd` (counterexample; the log names the
@@ -228,7 +245,14 @@ Example below for a block with ports `clk`, `rst_n`, `en`, `count`, `wrap`.
 3. In GTKWave: expand the hierarchy (`<block>` → `u_props`), add signals; the
    failing step is the last one in the trace. *File → Write Save File* stores the
    signal setup as `*.gtkw` (tracked by git, if you want to keep it).
-4. Stop the desktop when done: `verification/docker/pe-desktop.sh stop`.
+4. Read the source next to the waveform: the log names the failing assertion as
+   `file:line` (e.g. `<block>_props.sv:32`); open the properties and the RTL in an
+   editor in the desktop (`gedit`, `gvim`; `vim`/`nano` in the terminal):
+   ```bash
+   gedit <block>_props.sv ../../../src/<block>/<block>.v &
+   ```
+   Editing works on the host too: `/foss/designs` is your `$DESIGNS` folder.
+5. Stop the desktop when done: `verification/docker/pe-desktop.sh stop`.
 
 **On the host instead:** the traces are ordinary files below
 `~/edatools/designs/protocol-emulator/verification/formal/<block>/`. Open them with a
@@ -374,6 +398,10 @@ systemd-inhibit --what=sleep:handle-lid-switch --why="local hardening" \
    ```
 
 ### Probe: one block
+
+> **Untested until the first real block.** `--probe` and the wrapper below have not
+> been run through submission and precheck yet; expect to adjust this section then.
+
 
 1. Write `verification/probes/tt_um_<block>_probe.v`. Rules:
    - plain Verilog, module name `tt_um_<block>_probe`;
