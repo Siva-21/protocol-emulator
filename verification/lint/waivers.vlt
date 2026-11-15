@@ -1,0 +1,10 @@
+// Lint waivers for scripts/lint_rtl.sh (Verilator config, added to every unit).
+// Keep each waiver narrow: one rule, one file, one message.
+//
+// VARHIDDEN, sc_cfg.v: version 5.052 reports sc_cfg's width-function
+// argument 'k' as hiding the genvar 'k' of subcore (another module) once two
+// sc_pair instances exist (tt_um_protocol_emulator.u_p1.u_m). Different
+// scopes: no real shadowing.
+
+`verilator_config
+lint_off -rule VARHIDDEN -file "*src/sc_pair/sc_cfg.v" -match "*'k'*"
