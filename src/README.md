@@ -1,8 +1,8 @@
 # src/
 
-RTL for the Protocol Emulator (SystemVerilog; main_ss and sc_pair are
-Verilog-2005 as their specs require). Single clock domain, all flops
-async reset to 0.
+RTL for the Protocol Emulator (SystemVerilog; main_ss, sc_pair and pin_layer
+are Verilog-2005 as their specs require). Single clock domain, all flops
+async reset to 0, except the pin-layer input chains (no reset, D-PL-1).
 
 One folder per block, `src/<block>/`, with the file list `src/<block>/<block>.f`
 (paths relative to the repo root, `#` comments). The scripts in `scripts/` find
@@ -75,8 +75,8 @@ Not a block of its own (no `.f`).
 
 | File | Contents |
 |---|---|
-| `icg.v` | Clock gate (`sg13cmos5l_lgcp_1` with `PE_USE_CELLS`, else behavioural latch + AND); main_ss register-file rows, sc_pair configuration words, program half-rows and FIFO entries |
-| `lword.v` | Latch word, transparent while its gated clock is high, cleared by `rst_n` (`sg13cmos5l_dlhrq_1` with `PE_USE_CELLS`, else behavioural); sc_pair configuration and program latches |
+| `icg.v` | Clock gate (`sg13cmos5l_lgcp_1` with `PE_USE_CELLS`, else behavioural latch + AND); main_ss register-file rows, sc_pair configuration words, program half-rows and FIFO entries, pin_layer latch words and GPIO |
+| `lword.v` | Latch word, transparent while its gated clock is high, cleared by `rst_n` (`sg13cmos5l_dlhrq_1` with `PE_USE_CELLS`, else behavioural); sc_pair and pin_layer configuration / program latches |
 
 ## src/sc_pair/
 
@@ -109,6 +109,26 @@ Verilog-2005, `default_nettype none`. `sc_pair` instantiates the master `u_m`
 Per sub-core: 959 latches (957 on a partner), 324 flops (315), 72 clock gates.
 The reserved SEQ_CFG.SPLIT code 3 reads as 16/16, as in sc11.py.
 
+## src/pin_layer/
+
+Pin layer: 43 sources onto the 15 output pads (uo1-uo7, uio0-uio7) through
+combinational selects, and the 16 input pads into IN / IN_R through 16
+five-flop chains with loopback and glitch filter; registers 0x1800-0x181F.
+Spec: `docs/Implementation_spec/Pin_layer_Implementation_Specification.pdf`
+(v1.0, 15 Nov 2026), where the block is `pe_pin_layer`. D-PL-1 to D-PL-4,
+D-PL-9 and D-PL-10 confirmed by the owner on 15 Nov 2026. Verilog-2005,
+`default_nettype none`. `uo_out[0]` (host link MISO) is not driven here.
+
+| File | Contents | Flops |
+|---|---|---|
+| `pin_layer.v` | Top: bus window and `xr_q`, GPIO_OUT / GPIO_OE (one clock gate each), PAD_CFG x15 / FILT_UI / FILT_UIO / LOOPBACK latches (18 clock gates), pad slices, input chains | 46 |
+| `pin_layer_pad.v` | One pad slice (x15): 8:1 per code group, 8:1 by group, drive-enable select on uio pads, MODE logic | 0 |
+| `pin_layer_in.v` | One input chain (x16): loopback mux, `s1`, filter `y` (= IN) with counter `c`, `in_r`; no reset (D-PL-1) | 5 |
+| `pin_layer.f` | Filelist (includes `src/common/icg.v`, `src/common/lword.v`) | |
+
+126 flops (80 of them without reset), 168 latches (Yosys removes the 7 unused
+MODE[0] latches of the uo pads), 20 clock gates.
+
 ## Status
 
 - host_link and sys_ctrl not yet simulated. Both synthesize in Yosys 0.9:
@@ -125,4 +145,10 @@ The reserved SEQ_CFG.SPLIT code 3 reads as 16/16, as in sc11.py.
   4 sub-cores, every flop and latch equal (20 runs also with the IHP cell
   models). A directed Icarus test matches the spec Appendix A waveforms T1-T6
   clock by clock. The testbenches are not yet in the repo.
+- pin_layer: about 27.1k um^2 in `scripts/block_area.sh` (spec estimate
+  26.7k, budget 26.3k). A directed Icarus test (not yet in the repo) matches
+  the spec Appendix A waveforms T1-T5 clock by clock (T1 together with
+  sc_pair), and passes the exhaustive output-select (64 codes x 4 modes),
+  loopback, filter latency and register checks, behavioural and with the IHP
+  cell models. Not yet compared with pl_eq.py / pe.py (not available here).
 - No SystemVerilog interfaces are used; all ports are plain `input`/`output`.

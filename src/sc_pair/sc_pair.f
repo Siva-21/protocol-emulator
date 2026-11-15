@@ -1,5 +1,5 @@
 # sc_pair filelist (paths relative to repo root).
-# icg (shared with main_ss) and lword are in src/common/
+# icg (shared with main_ss) and lword (shared with pin_layer) are in src/common/
 src/common/icg.v
 src/common/lword.v
 src/sc_pair/sc_cfg.v
