@@ -45,8 +45,12 @@ module sys_ctrl (
   // Bus target, 0x1C00-0x1C0F: same 7 signals as the host link's master port
   input  wire        req_i,          // access to this block requested this clock (AS-1)
   input  wire        dir_i,          // 1 = write, 0 = read
+  // Upper bits unused by design: the interconnect decodes addr[15:4] (AS-1),
+  // registers are 8 bits wide.
+  /* verilator lint_off UNUSEDSIGNAL */
   input  wire [15:0] addr_i,         // only [3:0] used
   input  wire [15:0] wdata_i,        // only [7:0] used
+  /* verilator lint_on UNUSEDSIGNAL */
   output wire        wready_o,       // tied 1: never waits
   output wire        rready_o,       // tied 1: never waits
   output wire [15:0] rdata_o,        // valid the clock after the read is accepted

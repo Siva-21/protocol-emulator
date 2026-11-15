@@ -1,9 +1,14 @@
-# RTL
+# src/
 
 SystemVerilog RTL for the Protocol Emulator. Single clock domain, all flops
 async reset to 0.
 
-## host_link/
+One folder per block, `src/<block>/`, with the file list `src/<block>/<block>.f`
+(paths relative to the repo root, `#` comments). The scripts in `scripts/` find
+the blocks through these lists. `tt_um_protocol_emulator_placeholder.v` is the
+current Tiny Tapeout top (listed in `info.yaml`).
+
+## src/host_link/
 
 SPI target that turns one 40-bit frame into one 16-bit system bus access
 (master 0). Spec: `docs/Implementation_spec/Host_link_implementation_spec.pdf`.
@@ -19,7 +24,7 @@ SPI target that turns one 40-bit frame into one 16-bit system bus access
 The logic follows the spec §4 equations. Mark `sck_s1`, `csn_s1` and
 `mosi_s1` as synchroniser flops in the flow (P3).
 
-## sys_ctrl/
+## src/sys_ctrl/
 
 System control (`pe_sys_ctrl`): registers 0x1C00–0x1C05, shared prescaler,
 main-core and sub-core run control, IRQ, doorbell and WAIT vector. Bus target
