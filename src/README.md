@@ -1,7 +1,7 @@
 # src/
 
-RTL for the Protocol Emulator (SystemVerilog; main_ss, sc_pair and pin_layer
-are Verilog-2005 as their specs require). Single clock domain, all flops
+RTL for the Protocol Emulator (SystemVerilog; main_ss, sc_pair, pin_layer and
+sysbus are Verilog-2005 as their specs require). Single clock domain, all flops
 async reset to 0, except the pin-layer input chains (no reset, D-PL-1).
 
 One folder per block, `src/<block>/`, with the file list `src/<block>/<block>.f`
@@ -129,6 +129,28 @@ D-PL-9 and D-PL-10 confirmed by the owner on 15 Nov 2026. Verilog-2005,
 126 flops (80 of them without reset), 168 latches (Yosys removes the 7 unused
 MODE[0] latches of the uo pads), 20 clock gates.
 
+## src/sysbus/
+
+System bus: host link (master 0) and main core (master 1) to the seven bus
+targets and the unmapped space. Spec:
+`docs/Implementation_spec/Sysbus_Implementation_Specification.pdf` (v1.0,
+15 Nov 2026), where the block is `pe_sysbus`. The D-BUS-3 correction and
+D-BUS-5 to D-BUS-9 confirmed by the owner on 15 Nov 2026. Verilog-2005,
+`default_nettype none`.
+
+| File | Contents | Flops |
+|---|---|---|
+| `sysbus.v` | Host range decode and ready, host-only path to main_ss (`t_*`), chip-bus master select (host first), 16-bit chip decode, read-select flops `ts_q` / `hm_q`, read mux | 5 |
+| `sysbus.f` | Filelist | |
+
+Host addresses 0x0000-0x01FF and 0x1C10-0x1C1F go only to the main_ss target
+port and may wait (CRC busy); everything else is on the shared chip bus, where
+the host wins and the core is held one clock. Sub-cores 0x1000 + 0x80*n,
+pin layer 0x1800-0x181F, sys_ctrl 0x1C00-0x1C0F get a one-hot `req` and the
+full broadcast `c_addr`; unmapped addresses are accepted and read 0. Sideband
+wiring (SIG, WAIT, strobes, ticks, IRQ, IN/IN_R, pad sources) is not here
+(D-BUS-1).
+
 ## Status
 
 - host_link and sys_ctrl not yet simulated. Both synthesize in Yosys 0.9:
@@ -151,4 +173,10 @@ MODE[0] latches of the uo pads), 20 clock gates.
   sc_pair), and passes the exhaustive output-select (64 codes x 4 modes),
   loopback, filter latency and register checks, behavioural and with the IHP
   cell models. Not yet compared with pl_eq.py / pe.py (not available here).
+- sysbus: 5 flops, about 2.5k um^2 in `scripts/block_area.sh` (spec
+  estimate 2.7k). A directed Icarus test (not yet in the repo) matches the spec
+  Appendix A waveforms T1-T3, decodes all 65,536 addresses for both masters,
+  and runs 200,000 clocks of random two-master traffic against target stubs
+  (routing, accept once, read data in W+1, core held while the host is on the
+  chip bus, ready independence); it catches the spec's 10 seeded bugs.
 - No SystemVerilog interfaces are used; all ports are plain `input`/`output`.
