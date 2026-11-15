@@ -3,7 +3,7 @@ project:
   title:        "Protocol Emulator"      # Project title
   author:       "Protocol Emulator Team"      # Your name
   discord:      ""      # Your discord username, for communication and automatically assigning you a Tapeout role (optional)
-  description:  "SPI host link and protocol emulator (design in progress)"      # One line description of what your project does
+  description:  "Protocol emulator: four programmable sub-cores, main core, SPI host link"      # One line description of what your project does
   language:     "Verilog" # other examples include SystemVerilog, Amaranth, VHDL, etc
   clock_hz:     50000000       # Clock frequency in Hz (or 0 if not applicable)
 
@@ -11,13 +11,46 @@ project:
   tiles: "8x4"          # Valid values: 1x1, 1x2, 2x2, 3x2, 4x2, 6x2, 8x2, 3x4, 4x4, 5x4, 6x4 or 8x4
 
   # Your top module name must start with "tt_um_". Make it unique by including your github username:
-  top_module:  "tt_um_protocol_emulator_placeholder"
+  top_module:  "tt_um_protocol_emulator"
 
   # List your project's source files here.
   # Source files must be in ./src and you must list each source file separately, one per line.
   # Don't forget to also update `PROJECT_SOURCES` in test/Makefile.
   source_files:
-    - "tt_um_protocol_emulator_placeholder.v"
+    - "common/icg.v"
+    - "common/lword.v"
+    - "host_link/host_link_sync.sv"
+    - "host_link/host_link_ctrl.sv"
+    - "host_link/host_link_dp.sv"
+    - "host_link/host_link.sv"
+    - "sysbus/sysbus.v"
+    - "main_ss/sram_if.v"
+    - "main_ss/crc_bs.v"
+    - "main_ss/mc_core.v"
+    - "main_ss/main_ss.v"
+    - "sys_ctrl/sys_ctrl_psc.sv"
+    - "sys_ctrl/sys_ctrl_ctrl.sv"
+    - "sys_ctrl/sys_ctrl_rd.sv"
+    - "sys_ctrl/sys_ctrl.sv"
+    - "sc_pair/sc_cfg.v"
+    - "sc_pair/sc_bank.v"
+    - "sc_pair/sc_win.v"
+    - "sc_pair/sc_seq.v"
+    - "sc_pair/sc_evu.v"
+    - "sc_pair/sc_tmr.v"
+    - "sc_pair/sc_cnt.v"
+    - "sc_pair/sc_sa.v"
+    - "sc_pair/sc_sb.v"
+    - "sc_pair/sc_fifo_a.v"
+    - "sc_pair/sc_fifo_b.v"
+    - "sc_pair/sc_out.v"
+    - "sc_pair/subcore.v"
+    - "sc_pair/sc_pair.v"
+    - "pin_layer/pin_layer_in.v"
+    - "pin_layer/pin_layer_pad.v"
+    - "pin_layer/pin_layer.v"
+    - "common/rst_sync.v"
+    - "tt_um_protocol_emulator.v"
 
 # The pinout of your project. Leave unused pins blank. DO NOT delete or add any pins.
 # This section is for the datasheet/website. Use descriptive names (e.g., RX, TX, MOSI, SCL, SEG_A, etc.).

@@ -37,7 +37,7 @@ Contents:
 
 ```
 src/                                  RTL that gets hardened
-  tt_um_protocol_emulator_placeholder.v   Tiny Tapeout top (plain Verilog)
+  tt_um_protocol_emulator.v           Tiny Tapeout top (plain Verilog)
   <block>/<block>.v ...               one folder per block
   <block>/<block>.f                   file list, paths relative to the repo root
 test/                                 top-level cocotb test (TT template: tb.v, test.py, Makefile)

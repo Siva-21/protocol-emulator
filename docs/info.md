@@ -6,10 +6,11 @@ talks to it over a 4-wire SPI link (mode 0, bytes MSB-first). Through that link 
 host reads and writes the chip's internal registers, which configure and drive the
 protocol engines on the `protocol in/out/io` pins.
 
-**Design in progress:** this version is a placeholder top. While `ena` is high it
-registers `ui_in XOR uio_in` onto `uo_out` (so every input is used); `uio` is unused
-(all inputs, `uio_out` and `uio_oe` driven low). The host link and protocol engines
-are not included yet.
+Inside, four programmable sub-cores (in two pairs that can share program
+memory) drive and sample the pins with clock-exact timing; a small main core with
+a 512-word SRAM and a CRC / bit-stream unit frames and checks the data; a pin
+layer maps 43 sources onto the 15 output pads and filters the 16 inputs. All
+blocks share one system bus, on which the host has priority.
 
 ### Host link pins
 
@@ -24,8 +25,11 @@ are not included yet.
 
 ## How to test
 
-Not functional yet. With `ena` high and `rst_n` released, `uo_out` shows
-`ui_in XOR uio_in` one clock later; after reset it is 0.
+After reset every pad is released ('none': `uo_out` 0, `uio` inputs) and the
+main core and sub-cores are halted. Bring-up is done by the host over SPI:
+load the SRAM image, the sub-core programs and configuration, soft-reset the
+sub-cores, write the pin map, then start the main core and the sub-cores
+(architecture §6.5).
 
 ## External hardware
 

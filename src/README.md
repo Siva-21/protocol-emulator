@@ -6,8 +6,21 @@ async reset to 0, except the pin-layer input chains (no reset, D-PL-1).
 
 One folder per block, `src/<block>/`, with the file list `src/<block>/<block>.f`
 (paths relative to the repo root, `#` comments). The scripts in `scripts/` find
-the blocks through these lists. `tt_um_protocol_emulator_placeholder.v` is the
-current Tiny Tapeout top (listed in `info.yaml`).
+the blocks through these lists. `tt_um_protocol_emulator.v` is the Tiny Tapeout
+top; `info.yaml` lists every file the top needs.
+
+## Tiny Tapeout top
+
+`tt_um_protocol_emulator.v`: integration spec
+`docs/Integration_spec/Top_level_Integration_Specification_v1.pdf` (v1.0,
+15 Nov 2026), D-TOP-1 to D-TOP-6 and D-TOP-8 to D-TOP-10 confirmed by the owner
+on 15 Nov 2026. Eight instances (`u_rst`, `u_hl`, `u_bus`, `u_mcu`, `u_sys`,
+`u_p0`, `u_p1`, `u_pl`) and wiring; nets are named after their driver. The only
+new logic is the reset synchroniser `src/common/rst_sync.v` (2 flops, D-TOP-5):
+every block is reset by its output. `sc_pair` keeps its own port list (D-TOP-7,
+the narrower list of the spec's §3.3, is not adopted): the top uses the
+masters' `tap_o[7:0]` / `tap_oe_o[0]` and leaves the partners' taps and the
+sub-cores' ready outputs unused.
 
 ## src/host_link/
 
@@ -76,6 +89,7 @@ Not a block of its own (no `.f`).
 | File | Contents |
 |---|---|
 | `icg.v` | Clock gate (`sg13cmos5l_lgcp_1` with `PE_USE_CELLS`, else behavioural latch + AND); main_ss register-file rows, sc_pair configuration words, program half-rows and FIFO entries, pin_layer latch words and GPIO |
+| `rst_sync.v` | Reset synchroniser of the top (2 flops reset by the raw pin, D-TOP-5) |
 | `lword.v` | Latch word, transparent while its gated clock is high, cleared by `rst_n` (`sg13cmos5l_dlhrq_1` with `PE_USE_CELLS`, else behavioural); sc_pair and pin_layer configuration / program latches |
 
 ## src/sc_pair/
@@ -179,4 +193,8 @@ wiring (SIG, WAIT, strobes, ticks, IRQ, IN/IN_R, pad sources) is not here
   and runs 200,000 clocks of random two-master traffic against target stubs
   (routing, accept once, read data in W+1, core held while the host is on the
   chip bus, ready independence); it catches the spec's 10 seeded bugs.
+- tt_um_protocol_emulator: 6075 flops and latches, about 423.8k um^2 in
+  `scripts/block_area.sh` before CTS (spec subtotal estimate 392.8k, budget
+  398.5k). The top-level cocotb test (reset: pads 'none', no X) passes; the
+  chip-level system tests (spec V3-V7) are not done yet.
 - No SystemVerilog interfaces are used; all ports are plain `input`/`output`.

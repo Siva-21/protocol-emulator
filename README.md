@@ -8,8 +8,9 @@ core then drive and sample the remaining I/O pins to emulate serial and parallel
 protocols such as UART, SPI and I2C, in controller or target roles.
 Project metadata and pinout: [info.yaml](info.yaml), datasheet: [docs/info.md](docs/info.md).
 
-The design is in progress: the Tiny Tapeout top is currently a placeholder
-(`src/tt_um_protocol_emulator_placeholder.v`).
+The Tiny Tapeout top `src/tt_um_protocol_emulator.v` integrates all blocks
+(integration spec `docs/Integration_spec/Top_level_Integration_Specification_v1.pdf`);
+see [src/README.md](src/README.md) for the blocks and their status.
 
 ## Repository layout
 
