@@ -1,8 +1,9 @@
 // -----------------------------------------------------------------------------
 // icg
 //
-// Clock gate for one register-file row (main_ss spec §2.2, §5.6,
-// D-MC-14). With PE_USE_CELLS defined it instantiates sg13cmos5l_lgcp_1
+// Clock gate shared by the blocks (main_ss spec §2.2, §5.6, D-MC-14: one per
+// register-file row; sub-core spec §7, D-CG-1: one per configuration word,
+// program half-row and FIFO entry). With PE_USE_CELLS defined it instantiates sg13cmos5l_lgcp_1
 // (Liberty: clock_gating_integrated_cell "latch_posedge"); otherwise it is the
 // behavioural equivalent: a latch transparent while clk is low, ANDed with clk.
 //
