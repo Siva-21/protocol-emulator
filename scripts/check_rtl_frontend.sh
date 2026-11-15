@@ -4,6 +4,9 @@
 #   read_verilog -defer -noautowire -sv <file>...; hierarchy -check -top <top>
 # Units: each src/<block>/<block>.f (top module <block>) plus the Tiny Tapeout
 # top from info.yaml. Prints PASS/FAIL per unit; exits 1 if any unit fails.
+# Hard-macro black boxes in verification/stubs/*.v (e.g. the SRAM macro, which
+# comes from the PDK) are read first with read_verilog -lib, so a unit that
+# instantiates a macro is checked without the PDK.
 # Also fails if a *.v / *.sv file under src/ is in no unit (forgotten in the
 # .f / info.yaml, so neither CI nor hardening would see it).
 #
@@ -59,6 +62,7 @@ while IFS=$'\t' read -r name top files; do
 		echo "FAIL  $name  (missing:$miss)"; fails=$((fails + 1)); continue
 	fi
 	cmd=""
+	for f in verification/stubs/*.v; do [ -f "$f" ] && cmd+="read_verilog -lib -sv $f; "; done
 	for f in $files; do cmd+="read_verilog -defer -noautowire -sv $f; "; done
 	cmd+="hierarchy -check -top $top"
 	if "$YOSYS" -q -p "$cmd" > "$log" 2>&1; then

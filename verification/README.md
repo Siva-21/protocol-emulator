@@ -13,6 +13,7 @@ Step-by-step guide for every flow: [docs/WORKFLOWS.md](../docs/WORKFLOWS.md).
 | [formal/](formal/README.md) | per-block formal proofs: `formal/<block>/<block>.sby` + `*_props.sv` |
 | [regress/](regress/README.md) | regression runner and manifest (to come) |
 | [probes/](probes/README.md) | thin TT tops for hardening one block: `probes/tt_um_<block>_probe.v` |
+| `stubs/` | black boxes of hard macros (SRAM), read by the block-check scripts in place of the PDK models |
 
 A block is `src/<block>/` with a file list `src/<block>/<block>.f` whose top
 module is `<block>`; the scripts discover blocks from those file lists.

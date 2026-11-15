@@ -6,6 +6,8 @@
 # Units: each src/<block>/<block>.f (top module <block>) plus the Tiny Tapeout
 # top from info.yaml. Prints unit | cells | flip-flops | area (um^2).
 # Fails only if synthesis of a unit fails; the numbers are not checked.
+# Hard macros (black boxes in verification/stubs/*.v, e.g. the SRAM) are not
+# in the area.
 #
 #   scripts/block_area.sh                    (env: YOSYS=yosys, LIBERTY=<.lib or .lib.gz>)
 #
@@ -91,6 +93,7 @@ while IFS=$'\t' read -r name top files; do
 		printf '%-40s FAIL (missing:%s)\n' "$name" "$miss"; fails=$((fails + 1)); continue
 	fi
 	cmd=""
+	for f in verification/stubs/*.v; do [ -f "$f" ] && cmd+="read_verilog -lib -sv $f; "; done
 	for f in $files; do cmd+="read_verilog -sv $f; "; done
 	cmd+="synth -flatten -top $top; dfflibmap -liberty $lib; abc -liberty $lib; opt_clean; "
 	cmd+="tee -q -o $tmp/stat.json stat -json -liberty $lib"
