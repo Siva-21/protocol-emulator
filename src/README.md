@@ -1,6 +1,7 @@
 # src/
 
-SystemVerilog RTL for the Protocol Emulator. Single clock domain, all flops
+RTL for the Protocol Emulator (SystemVerilog; main_ss is Verilog-2005
+as its spec requires). Single clock domain, all flops
 async reset to 0.
 
 One folder per block, `src/<block>/`, with the file list `src/<block>/<block>.f`
@@ -44,8 +45,36 @@ that never waits. Spec:
 The interconnect decodes addr[15:4] and raises `req_i` only for this block
 (AS-1); the block uses addr[3:0] and wdata[7:0] only.
 
+## src/main_ss/
+
+Main-core subsystem: main core, the single SRAM macro with its port logic, and
+the CRC + bit-stream unit (0x1C10-0x1C19). Spec:
+`docs/Implementation_spec/Main_Subsystem_implementation_specification.pdf`
+(v1.1, D-MC-1..17), where the block is `pe_mcu_subsys` and the modules carry a
+`pe_` prefix. Verilog-2005, `default_nettype none`.
+
+| File | Contents | Flops |
+|---|---|---|
+| `main_ss.v` | Top: host request classification, target ready/rdata (`rsel_q`), CRC-block access mux | 1 |
+| `mc_core.v` | Core: control (`pc`, `irv`, pending load), decode, ALU, register file r1-r7, bus master | 130 |
+| `icg.v` | Clock gate per register-file row (`sg13cmos5l_lgcp_1` with `PE_USE_CELLS`, else behavioural latch + AND) | 0 |
+| `sram_if.v` | SRAM port priority (host > data > fetch) and the `RM_IHPSG13_1P_512x16_c2_bm_bist` instance | 0 |
+| `crc_bs.v` | CRC LFSR, bit-stream stuffing / destuffing / NRZI / packer, OUT, read register | 147 |
+| `main_ss.f` | Filelist (the SRAM macro model is in the PDK, not listed) | |
+
+The interconnect raises `t_req_i` for 0x0000-0x01FF and 0x1C10-0x1C1F (one
+select, D-MC-8). Simulation needs the PDK SRAM model
+(`libs.ref/sg13cmos5l_sram/verilog/RM_IHPSG13_1P_512x16_c2_bm_bist.v` and
+`RM_IHPSG13_1P_core_behavioral_bm_bist.v`, `-DFUNCTIONAL`). The block checks
+in `scripts/` use the black box in `verification/stubs/` instead.
+
 ## Status
 
-- Not yet simulated. Both blocks synthesize in Yosys 0.9: host_link 48 flops,
-  sys_ctrl 30 flops.
+- host_link and sys_ctrl not yet simulated. Both synthesize in Yosys 0.9:
+  host_link 48 flops, sys_ctrl 30 flops.
+- main_ss: 278 flops + 7 clock-gate latches + SRAM macro; about 37.6k um^2
+  in `scripts/block_area.sh` (spec estimate 33.6k, budget 32k). A directed
+  Icarus test (not yet in the repo) matches the Appendix B scenarios T1-T13
+  clock by clock and the CRC-8/16/32/5 check values. Not yet compared with
+  mc11.py.
 - No SystemVerilog interfaces are used; all ports are plain `input`/`output`.
