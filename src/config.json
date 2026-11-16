@@ -38,11 +38,14 @@
   "//": "Verilog header (vh) is the ports-only black box in verification/stubs/: the",
   "//": "linter and synthesis read it in place of the behavioural model. Location in um",
   "//": "on the placement grid (site 0.48, row 3.78) of the 8x4 die (1724.16 x 710.64).",
+  "//": "The x position is not free: src/pdn_cfg.tcl lays the Metal4 power straps so that",
+  "//": "they land on the macro's Metal4 power pins only at x = 107.52 (and a few others);",
+  "//": "pdn_cfg.tcl fails the PDN step with a message if the macro is moved to a bad spot.",
   "MACROS": {
     "RM_IHPSG13_1P_512x16_c2_bm_bist": {
       "instances": {
         "u_mcu.u_sram.u_mem": {
-          "location": [100.32, 102.06],
+          "location": [107.52, 102.06],
           "orientation": "N"
         }
       },
@@ -56,6 +59,23 @@
       }
     }
   },
+
+  "//": "Latch arrays (program store, configuration): STA reports every latch D pin with",
+  "//": "slack 0.000 (time borrowing). The resizer counts slack < margin as a violation,",
+  "//": "so with the default margins (0.05 / 0.025 ns) repair_timing chases ~4300 latch",
+  "//": "endpoints it can never improve and does not finish. Real violations are negative.",
+  "PL_RESIZER_SETUP_SLACK_MARGIN": 0,
+  "GRT_RESIZER_SETUP_SLACK_MARGIN": 0,
+
+  "//": "Clock nets: the gated clocks (every lgcp / pe_icg output) make ~2200 clock nets.",
+  "//": "With the default CTS_APPLY_NDR=half every one gets a 2x-spacing rule, global routing",
+  "//": "cannot clear the overflow and drops the rule one net per 50-iteration cycle.",
+  "CTS_APPLY_NDR": "none",
+
+  "//": "Power grid: the SRAM pins are Metal4 stripes and the stock macro grid needs",
+  "//": "TopMetal1 (reserved on sg13cmos5l), so the macro is connected by Metal4 overlap",
+  "//": "with the straps, see src/pdn_cfg.tcl.",
+  "PDN_CFG": "dir::pdn_cfg.tcl",
 
   "//": "SRAM supply pins: VDD! (periphery) and VDDARRAY! (array) to VPWR, VSS! to VGND.",
   "PDN_MACRO_CONNECTIONS": [
