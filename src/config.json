@@ -33,6 +33,36 @@
 
   "//": "Configuration docs: https://librelane.readthedocs.io/en/latest/reference/configuration.html",
 
+  "//": "SRAM macro of main_ss (u_mcu.u_sram.u_mem): IHP RM_IHPSG13_1P_512x16_c2_bm_bist,",
+  "//": "236.8 x 191.34 um. GDS, LEF and Liberty come from the PDK (pdk_dir::). The",
+  "//": "Verilog header (vh) is the ports-only black box in verification/stubs/: the",
+  "//": "linter and synthesis read it in place of the behavioural model. Location in um",
+  "//": "on the placement grid (site 0.48, row 3.78) of the 8x4 die (1724.16 x 710.64).",
+  "MACROS": {
+    "RM_IHPSG13_1P_512x16_c2_bm_bist": {
+      "instances": {
+        "u_mcu.u_sram.u_mem": {
+          "location": [100.32, 102.06],
+          "orientation": "N"
+        }
+      },
+      "gds": ["pdk_dir::libs.ref/sg13cmos5l_sram/gds/RM_IHPSG13_1P_512x16_c2_bm_bist.gds"],
+      "lef": ["pdk_dir::libs.ref/sg13cmos5l_sram/lef/RM_IHPSG13_1P_512x16_c2_bm_bist.lef"],
+      "vh": ["dir::../verification/stubs/RM_IHPSG13_1P_512x16_c2_bm_bist.v"],
+      "lib": {
+        "*_typ_*": ["pdk_dir::libs.ref/sg13cmos5l_sram/lib/RM_IHPSG13_1P_512x16_c2_bm_bist_typ_1p20V_25C.lib"],
+        "*_slow_*": ["pdk_dir::libs.ref/sg13cmos5l_sram/lib/RM_IHPSG13_1P_512x16_c2_bm_bist_slow_1p08V_125C.lib"],
+        "*_fast_*": ["pdk_dir::libs.ref/sg13cmos5l_sram/lib/RM_IHPSG13_1P_512x16_c2_bm_bist_fast_1p32V_m55C.lib"]
+      }
+    }
+  },
+
+  "//": "SRAM supply pins: VDD! (periphery) and VDDARRAY! (array) to VPWR, VSS! to VGND.",
+  "PDN_MACRO_CONNECTIONS": [
+    "u_mcu.u_sram.u_mem VPWR VGND VDD! VSS!",
+    "u_mcu.u_sram.u_mem VPWR VGND VDDARRAY! VSS!"
+  ],
+
   "//": "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!",
   "//": "!!! DO NOT CHANGE ANYTHING BELOW THIS POINT !!!",
   "//": "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!",
