@@ -105,7 +105,7 @@ Inside `pe-verif`, from the repo root. Step-by-step guide for every flow
 | Flow | Command |
 |---|---|
 | Block checks | `scripts/check_rtl_frontend.sh`, `scripts/lint_rtl.sh`, `scripts/block_area.sh` (area is informational) |
-| Top-level cocotb test | `cd test && make -B` (Verilator), `cd test && make -B SIM=icarus` (`make -C test` does not work: the template Makefile uses `$PWD`) |
+| Top-level cocotb test | `make -C test -B` (Verilator), `make -C test -B SIM=icarus`; on the host: `verification/docker/pe-shell.sh make -C test -B` |
 | Local hardening (Tiny Tapeout IHP flow: harden, precheck, gate-level test, ~1 h 20 min) | `scripts/harden_local.sh` |
 | Harden one block via its probe top | `scripts/harden_local.sh --probe <block>` ([verification/probes/](verification/probes/README.md)) |
 | Unit tests, formal, regressions | see [verification/README.md](verification/README.md) |

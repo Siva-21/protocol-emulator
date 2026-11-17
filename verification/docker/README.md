@@ -90,7 +90,7 @@ One command, from the repo root:
 
 ```bash
 verification/docker/pe-shell.sh scripts/lint_rtl.sh
-verification/docker/pe-shell.sh bash -c 'cd test && make -B'   # several steps: bash -c
+verification/docker/pe-shell.sh make -C test -B
 ```
 
 Desktop on `http://localhost:8080` (`WEB_PORT`), bound to `127.0.0.1` only. The

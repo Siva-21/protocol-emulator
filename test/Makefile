@@ -1,6 +1,10 @@
 # Makefile
 # See https://docs.cocotb.org/en/stable/quickstart.html for more info
 
+# Make paths work with `make -C test` as well as `cd test && make`
+PWD := $(CURDIR)
+export PWD
+
 # defaults
 # RTL runs default to Verilator, or Icarus if Verilator is not on PATH.
 # Gate-level runs stay on Icarus. Tiny Tapeout's gl_test action installs only

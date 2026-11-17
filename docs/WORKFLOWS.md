@@ -369,20 +369,20 @@ with `$dumpfile("dump.fst"); $dumpvars(0, tb_<block>);` and `$finish`:
 ## Top-level test
 
 The Tiny Tapeout template test in `test/` drives the TT top (`tb.v` + `test.py`).
-Run it from `test/` (`make -C test` does not work: the template Makefile uses `$PWD`).
+Run it from the repo root with `make -C test`, or from `test/` with plain `make`
+(the Makefile sets `PWD := $(CURDIR)`, so both work).
 
 1. RTL:
    ```bash
-   cd test
-   make -B                   # Verilator
-   make -B SIM=icarus        # Icarus
+   make -C test -B                     # Verilator
+   make -C test -B SIM=icarus          # Icarus
+   verification/docker/pe-shell.sh make -C test -B   # same, from the host
    ```
    Waveform: `test/tb.fst` (`gtkwave tb.fst tb.gtkw`), results: `test/results.xml`.
 2. Gate level (after a local hardening, which also runs this as its `gl-test` stage):
    ```bash
    cp tt_submission/*.v test/gate_level_netlist.v
-   cd test
-   make -B GATES=yes PDK_ROOT=$PDK_ROOT_CI/ciel/ihp-sg13/versions/89d42ee6d2fd9b50b86a1aada6fee6673c3e6008
+   make -C test -B GATES=yes PDK_ROOT=$PDK_ROOT_CI/ciel/ihp-sg13/versions/89d42ee6d2fd9b50b86a1aada6fee6673c3e6008
    ```
 3. On GitHub: `test` runs the RTL test on every push (artifact `test-results`);
    `gds` → *gl_test* runs the gate-level test on the CI netlist
