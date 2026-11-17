@@ -8,9 +8,13 @@ Step-by-step guide for every flow in this repo. It assumes:
 - commands run **inside pe-verif from the repo root** unless a step says otherwise:
 
 ```bash
-verification/docker/pe-shell.sh          # on the host, from the repo root
-cd /foss/designs/protocol-emulator       # inside the container
+verification/docker/pe-shell.sh                       # on the host, from the repo root:
+                                                      # the shell starts in /foss/designs/protocol-emulator
+verification/docker/pe-shell.sh scripts/lint_rtl.sh   # or one command, same folder
 ```
+
+`pe-shell.sh` (and `pe-desktop.sh`) start in the container folder that matches
+the host's current folder below `$DESIGNS`; outside it, in `/foss/designs`.
 
 All paths below are relative to the repo root. Replace `<block>` with your
 block name (lower case, e.g. `spi_rx`).
@@ -261,7 +265,9 @@ Example below for a block with ports `clk`, `rst_n`, `en`, `count`, `wrap`.
    verification/docker/pe-desktop.sh            # on the host, from the repo root
    ```
    Open <http://localhost:8080>, log in with the password from
-   `~/edatools/.vnc_password`, open a terminal.
+   `~/edatools/.vnc_password`, open a terminal. (The desktop is created in the
+   folder matching the host's current one; a desktop that is already running
+   keeps its folder, so the step below changes folder explicitly.)
 2. Open the trace (failing assertion or cover):
    ```bash
    cd /foss/designs/protocol-emulator/verification/formal/<block>
@@ -393,9 +399,7 @@ the lid switch inhibited:
 ```bash
 # on the host, from the repo root (append --probe <block> to the script for a probe)
 systemd-inhibit --what=sleep:handle-lid-switch --why="local hardening" \
-  docker run --rm -u "$(id -u):$(id -g)" -v "${DESIGNS:-$HOME/edatools/designs}:/foss/designs:rw" \
-  -w /foss/designs/protocol-emulator ghcr.io/siva-21/pe-verif:2026.10 \
-  -s bash -c 'TMPDIR=$PWD/runs scripts/harden_local.sh'
+  verification/docker/pe-shell.sh bash -c 'TMPDIR=$PWD/runs scripts/harden_local.sh'
 ```
 
 ### Real top

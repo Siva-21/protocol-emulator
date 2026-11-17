@@ -7,6 +7,11 @@
 #
 # Then open http://localhost:$WEB_PORT and enter the password from $PASSWORD_FILE.
 #
+# The desktop starts in the container folder that matches the host's current
+# folder when that is inside $DESIGNS (e.g. repo root ->
+# /foss/designs/protocol-emulator), else in /foss/designs. The folder is fixed
+# when the container is created; a running or restarted desktop keeps it.
+#
 # Security:
 # - The web UI is published on 127.0.0.1:$WEB_PORT only; the raw VNC port
 #   (5901) is not published.
@@ -82,9 +87,17 @@ else
 		echo "[ERROR] DESIGNS directory $DESIGNS does not exist (set DESIGNS=...)." >&2
 		exit 1
 	fi
+	# Container folder matching the host's current folder (as in pe-shell.sh).
+	designs_real="$(cd "$DESIGNS" && pwd -P)"
+	here_real="$(pwd -P)"
+	case "$here_real/" in
+		"$designs_real"/*) WORKDIR="/foss/designs${here_real#"$designs_real"}" ;;
+		*)                 WORKDIR=/foss/designs ;;
+	esac
 	# Same options as the IIC-OSIC-TOOLS start_vnc.sh (seccomp, keyboard
 	# layout, designs mount), with the web port bound to localhost only.
 	docker run -d --name "$CONTAINER_NAME" \
+		-w "$WORKDIR" \
 		--user "$CONTAINER_USER:$CONTAINER_GROUP" \
 		--security-opt seccomp=unconfined \
 		-p "127.0.0.1:${WEB_PORT}:80" \
@@ -106,4 +119,5 @@ for _ in 1 2 3; do
 	fi
 done
 echo "[INFO] Desktop: http://localhost:${WEB_PORT}  (password: ${PASSWORD_FILE})"
+echo "[INFO] Start folder: $(docker inspect -f '{{.Config.WorkingDir}}' "$CONTAINER_NAME")"
 echo "[INFO] Stop it with: $0 stop"

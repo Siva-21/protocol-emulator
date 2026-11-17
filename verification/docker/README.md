@@ -68,22 +68,29 @@ to this repository.
 
 Both scripts mount `$DESIGNS` (default `$HOME/edatools/designs`) at
 `/foss/designs` and run as your UID/GID, so files you write there stay yours.
-This repo is expected below `$DESIGNS`. Both set `PDK=ihp-sg13cmos5l` in the
+This repo is expected below `$DESIGNS`. Both start in the container folder that
+matches the host's current folder when that is inside `$DESIGNS` (repo root ->
+`/foss/designs/protocol-emulator`, `test/` -> `.../protocol-emulator/test`), so
+relative paths work as on the host; anywhere else they start in `/foss/designs`.
+`pe-desktop.sh` fixes the folder when it creates the container (it prints it);
+a desktop that is already running keeps its folder. Both set `PDK=ihp-sg13cmos5l` in the
 container (the base defaults to ihp-sg13g2); the image derives `PDKPATH`,
 `STD_CELL_LIBRARY`, `KLAYOUT_PATH` and `SPICE_USERINIT_DIR` from it, so no personal
 `.designinit` is needed. All settings are variables at the top of each script and
 can be overridden from the environment (`DESIGNS`, `IMAGE`, `PDK`, ...).
 
-Shell (removed on exit; a second call joins the open shell):
+Shell (removed on exit; a second call joins the open shell, again in the folder
+matching the current one), from the repo root:
 
 ```bash
 verification/docker/pe-shell.sh
 ```
 
-One command:
+One command, from the repo root:
 
 ```bash
-verification/docker/pe-shell.sh bash -c 'cd /foss/designs/protocol-emulator && scripts/lint_rtl.sh'
+verification/docker/pe-shell.sh scripts/lint_rtl.sh
+verification/docker/pe-shell.sh bash -c 'cd test && make -B'   # several steps: bash -c
 ```
 
 Desktop on `http://localhost:8080` (`WEB_PORT`), bound to `127.0.0.1` only. The

@@ -45,10 +45,12 @@ listed in `info.yaml`). See [src/README.md](src/README.md) for the blocks and th
 6. **Desktop password** (optional): the browser desktop
    (`verification/docker/pe-desktop.sh`) generates one on first use in
    `~/edatools/.vnc_password`; `pe-desktop.sh url` prints the login URL.
-7. **First check**, from the repo root; every unit must report `PASS`. The
-   container starts in `/foss/designs`, so the script is given by its path there:
+7. **First check**, run from the repo folder; every unit must report `PASS`.
+   `pe-shell.sh` starts the container in the matching folder
+   (`/foss/designs/protocol-emulator`), so repo-relative paths work as on the host:
    ```bash
-   verification/docker/pe-shell.sh /foss/designs/protocol-emulator/scripts/check_rtl_frontend.sh
+   cd ~/edatools/designs/protocol-emulator
+   verification/docker/pe-shell.sh scripts/check_rtl_frontend.sh
    ```
 8. **Next:** the flows step by step in [docs/WORKFLOWS.md](docs/WORKFLOWS.md),
    branches, commits and PRs in [CONTRIBUTING.md](CONTRIBUTING.md).
@@ -87,7 +89,8 @@ CI comparison and the checks behind them: [docs/toolchain.md](docs/toolchain.md)
 
 ```bash
 docker pull ghcr.io/siva-21/pe-verif:2026.10   # once, ~25 GB disk (x86_64)
-verification/docker/pe-shell.sh                # shell, repo at /foss/designs/protocol-emulator
+verification/docker/pe-shell.sh                # shell, from the repo root: starts in /foss/designs/protocol-emulator
+verification/docker/pe-shell.sh scripts/lint_rtl.sh   # or one command, in the same folder
 ```
 
 The start scripts use that image name by default; building it locally instead is
