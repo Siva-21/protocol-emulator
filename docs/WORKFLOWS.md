@@ -130,8 +130,9 @@ verilator --lint-only -Wall --top-module <block> $(sed 's/#.*//' src/<block>/<bl
 ## GitHub checks
 
 1. **What runs:** every push to any branch starts `rtl-checks`, `test`, `docs` and
-   `gds` (incl. precheck and gate-level test). `rtl-checks` also runs on
-   `pull_request`. Details: [Scripts and workflows](#scripts-and-workflows).
+   `gds` (incl. precheck and gate-level test), once per commit; a PR shows the
+   runs of its branch's pushes (no separate `pull_request` runs).
+   Details: [Scripts and workflows](#scripts-and-workflows).
 2. **Skip rule (`test`, `gds`):** a first job, *changes*, checks which paths the
    push changed. The heavy jobs (*test*; *gds* and with it *precheck*, *gl_test*,
    *viewer*) run only if it touched `src/**`, `test/**`, `info.yaml`,
@@ -540,7 +541,7 @@ this branch, never open a PR from it; delete it afterwards.**
 
 | Workflow | Trigger | Jobs / content |
 |---|---|---|
-| `rtl-checks` | push, pull_request, manual | frontend (yowasp-yosys 0.69), lint (Verilator), block-area (job summary) |
+| `rtl-checks` | push, manual | frontend (yowasp-yosys 0.69), lint (Verilator), block-area (job summary) |
 | `test` | push, manual; skipped without design changes (not on `main`) | top-level cocotb test (Verilator, RTL); artifact `test-results` |
 | `docs` | push, manual | TT datasheet from `docs/info.md` |
 | `gds` | push, manual; skipped without design changes (not on `main`) | gds → precheck, gl_test, viewer (GitHub Pages) |

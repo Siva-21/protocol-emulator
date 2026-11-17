@@ -83,7 +83,7 @@ their older run on the same branch. Details: [docs/WORKFLOWS.md](docs/WORKFLOWS.
 
 | Workflow | What it checks |
 |---|---|
-| `rtl-checks` | Yosys frontend check, Verilator lint, block area table (job summary). Also runs on `pull_request`. |
+| `rtl-checks` | Yosys frontend check, Verilator lint, block area table (job summary) |
 | `test` | top-level cocotb test (Verilator, RTL) |
 | `docs` | Tiny Tapeout datasheet build from `docs/info.md` |
 | `gds` | Tiny Tapeout hardening (LibreLane, `ihp-sg13cmos5l`), then **precheck** and the **gate-level test** on the hardened netlist |
