@@ -3,7 +3,9 @@
 #   verilator --lint-only -Wall --top-module <top> <file>...
 # Units: each src/<block>/<block>.f (top module <block>) plus the Tiny Tapeout
 # top from info.yaml. Prints PASS/FAIL per unit (first warnings on failure);
-# exits 1 if any unit fails.
+# exits 1 if any unit fails. Hard-macro black boxes in verification/stubs/*.v
+# (e.g. the SRAM macro, which comes from the PDK) and the waiver files
+# verification/lint/*.vlt (Verilator configuration) are added to every unit.
 #
 #   scripts/lint_rtl.sh                      (env: VERILATOR=verilator)
 set -euo pipefail
@@ -49,6 +51,8 @@ missing_files() {
 }
 
 log=$(mktemp); trap 'rm -f "$log"' EXIT
+stubs=$(ls verification/stubs/*.v 2>/dev/null || true)
+waivers=$(ls verification/lint/*.vlt 2>/dev/null || true)
 units=$(list_units)
 fails=0
 while IFS=$'\t' read -r name top files; do
@@ -57,7 +61,7 @@ while IFS=$'\t' read -r name top files; do
 		echo "FAIL  $name  (missing:$miss)"; fails=$((fails + 1)); continue
 	fi
 	# shellcheck disable=SC2086  # file list is intentionally word-split
-	if "$VERILATOR" --lint-only -Wall --top-module "$top" $files > "$log" 2>&1; then
+	if "$VERILATOR" --lint-only -Wall --top-module "$top" $waivers $files $stubs > "$log" 2>&1; then
 		echo "PASS  $name"
 	else
 		echo "FAIL  $name"

@@ -36,8 +36,9 @@ Contents:
 ## Repo hierarchy
 
 ```
-src/                                  RTL that gets hardened
-  tt_um_protocol_emulator_placeholder.v   Tiny Tapeout top (plain Verilog)
+src/                                  RTL
+  tt_um_protocol_emulator_placeholder.v  hardened Tiny Tapeout top (placeholder, in info.yaml)
+  tt_um_protocol_emulator/            integrated top (.v + .f): checked as a unit, not hardened yet
   <block>/<block>.v ...               one folder per block
   <block>/<block>.f                   file list, paths relative to the repo root
 test/                                 top-level cocotb test (TT template: tb.v, test.py, Makefile)
@@ -57,6 +58,12 @@ info.yaml                             TT project file (top, sources, tiles, cloc
 Generated output is git-ignored everywhere: `runs/`, `tt/`, `tt_submission/`,
 `.venv*/`, `sim_build/`, `obj_dir/`, `results.xml`, `*.vvp`, `*.log`, `*.vcd`,
 `*.fst`, sby work folders. `*.gtkw` (waveform save files) stay tracked.
+
+**Two tops.** `info.yaml` names the top that gets hardened, and that is still the
+placeholder `src/tt_um_protocol_emulator_placeholder.v`. The integrated top
+`src/tt_um_protocol_emulator/tt_um_protocol_emulator.v` is a unit like any block:
+`rtl-checks` checks it through its `.f` (frontend, lint, area). Hardening it (SRAM
+placement, power grid, timing) is work in progress on branch `pd/sram-integration`.
 
 ## Adding RTL for a new block
 
@@ -94,9 +101,11 @@ Generated output is git-ignored everywhere: `runs/`, `tt/`, `tt_submission/`,
    git fetch origin && git rebase origin/main
    git push -u origin feature/<block>
    ```
-8. **Do not add the block to `info.yaml`** until it is integrated into the real
-   Tiny Tapeout top. `info.yaml` lists only what the top uses; to harden a block
-   alone, use its [probe](#probe-one-block).
+8. **Do not add the block to `info.yaml`.** When it is integrated, instantiate it in
+   `src/tt_um_protocol_emulator/tt_um_protocol_emulator.v` and add its files to
+   `src/tt_um_protocol_emulator/tt_um_protocol_emulator.f` (before the top file).
+   `info.yaml` lists only what the hardened top uses; to harden a block alone,
+   use its [probe](#probe-one-block).
 
 ## Quick lint and elaboration
 
@@ -121,8 +130,9 @@ verilator --lint-only -Wall --top-module <block> $(sed 's/#.*//' src/<block>/<bl
 ## GitHub checks
 
 1. **What runs:** every push to any branch starts `rtl-checks`, `test`, `docs` and
-   `gds` (incl. precheck and gate-level test). `rtl-checks` also runs on
-   `pull_request`. Details: [Scripts and workflows](#scripts-and-workflows).
+   `gds` (incl. precheck and gate-level test), once per commit; a PR shows the
+   runs of its branch's pushes (no separate `pull_request` runs).
+   Details: [Scripts and workflows](#scripts-and-workflows).
 2. **Skip rule (`test`, `gds`):** a first job, *changes*, checks which paths the
    push changed. The heavy jobs (*test*; *gds* and with it *precheck*, *gl_test*,
    *viewer*) run only if it touched `src/**`, `test/**`, `info.yaml`,
@@ -531,7 +541,7 @@ this branch, never open a PR from it; delete it afterwards.**
 
 | Workflow | Trigger | Jobs / content |
 |---|---|---|
-| `rtl-checks` | push, pull_request, manual | frontend (yowasp-yosys 0.69), lint (Verilator), block-area (job summary) |
+| `rtl-checks` | push, manual | frontend (yowasp-yosys 0.69), lint (Verilator), block-area (job summary) |
 | `test` | push, manual; skipped without design changes (not on `main`) | top-level cocotb test (Verilator, RTL); artifact `test-results` |
 | `docs` | push, manual | TT datasheet from `docs/info.md` |
 | `gds` | push, manual; skipped without design changes (not on `main`) | gds → precheck, gl_test, viewer (GitHub Pages) |

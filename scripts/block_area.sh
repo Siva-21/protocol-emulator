@@ -6,6 +6,11 @@
 # Units: each src/<block>/<block>.f (top module <block>) plus the Tiny Tapeout
 # top from info.yaml. Prints unit | cells | flip-flops | area (um^2).
 # Fails only if synthesis of a unit fails; the numbers are not checked.
+# Hard macros (black boxes in verification/stubs/*.v, e.g. the SRAM) are not
+# in the table's area. After the table, for every unit that instantiates one,
+# the macro area (LEF SIZE, from $PDK_ROOT/ihp-sg13cmos5l/libs.ref/sg13cmos5l_sram/lef/
+# or else the PDK of the Liberty file) and the total with macros are printed;
+# without the LEF: "macro area: PDK not available".
 #
 #   scripts/block_area.sh                    (env: YOSYS=yosys, LIBERTY=<.lib or .lib.gz>)
 #
@@ -83,6 +88,8 @@ for i, (pos, name) in enumerate(starts):
 PY
 
 units=$(list_units)
+# Hard-macro module names: the black boxes in verification/stubs/*.v.
+macro_names=$(sed -n 's/^[[:space:]]*module[[:space:]]\{1,\}\([A-Za-z_][A-Za-z0-9_$]*\).*/\1/p' verification/stubs/*.v 2>/dev/null | tr '\n' ' ' || true)
 fails=0
 printf '%-40s %8s %11s %14s\n' "unit" "cells" "flip-flops" "area (um^2)"
 while IFS=$'\t' read -r name top files; do
@@ -91,6 +98,7 @@ while IFS=$'\t' read -r name top files; do
 		printf '%-40s FAIL (missing:%s)\n' "$name" "$miss"; fails=$((fails + 1)); continue
 	fi
 	cmd=""
+	for f in verification/stubs/*.v; do [ -f "$f" ] && cmd+="read_verilog -lib -sv $f; "; done
 	for f in $files; do cmd+="read_verilog -sv $f; "; done
 	cmd+="synth -flatten -top $top; dfflibmap -liberty $lib; abc -liberty $lib; opt_clean; "
 	cmd+="tee -q -o $tmp/stat.json stat -json -liberty $lib"
@@ -99,17 +107,63 @@ while IFS=$'\t' read -r name top files; do
 		grep -m 5 -E "ERROR|Error" "$tmp/log" | sed 's/^/      /' || tail -n 5 "$tmp/log" | sed 's/^/      /'
 		fails=$((fails + 1)); continue
 	fi
-	python3 - "$tmp/stat.json" "$tmp/seq_cells" "$top" "$name" <<'PY'
+	python3 - "$tmp/stat.json" "$tmp/seq_cells" "$top" "$name" "$tmp/macros.tsv" "$macro_names" <<'PY'
 import json, sys
 stat = json.load(open(sys.argv[1]))
 seq = set(open(sys.argv[2]).read().split())
 top, name = sys.argv[3], sys.argv[4]
+macros = set(sys.argv[6].split())
 mod = stat["modules"].get("\\" + top) or stat.get("design", {})
 by_type = mod.get("num_cells_by_type", {})
 ffs = sum(n for t, n in by_type.items() if t.lstrip("\\") in seq)
 area = mod.get("area", 0.0)
 print(f"{name:<40} {mod.get('num_cells', 0):>8} {ffs:>11} {area:>14.2f}")
+# Hard macros this unit instantiates: "<unit>\t<std-cell area>\t<macro>\t<count>".
+with open(sys.argv[5], "a") as out:
+    for t, n in sorted(by_type.items()):
+        if t.lstrip("\\") in macros:
+            out.write(f"{name}\t{area}\t{t.lstrip(chr(92))}\t{n}\n")
 PY
 done <<< "$units"
+
+# Hard-macro area from the LEF SIZE (informational).
+if [ -s "$tmp/macros.tsv" ]; then
+	lef_dirs=()
+	[ -n "${PDK_ROOT:-}" ] && lef_dirs+=("$PDK_ROOT/ihp-sg13cmos5l/libs.ref/sg13cmos5l_sram/lef")
+	# The PDK the Liberty file comes from (.../libs.ref/<lib>/lib/<file>).
+	lef_dirs+=("$(dirname "$(dirname "$(dirname "$LIBERTY")")")/sg13cmos5l_sram/lef")
+	echo
+	python3 - "$tmp/macros.tsv" "${lef_dirs[@]}" <<'PY'
+import collections, os, re, sys
+rows = [l.rstrip("\n").split("\t") for l in open(sys.argv[1]) if l.strip()]
+dirs = [d for d in sys.argv[2:] if os.path.isdir(d)]
+def lef_size(macro):
+    for d in dirs:
+        p = os.path.join(d, macro + ".lef")
+        if os.path.isfile(p):
+            m = re.search(r"^\s*MACRO\s+" + re.escape(macro) + r"\b.*?^\s*SIZE\s+([\d.]+)\s+BY\s+([\d.]+)",
+                          open(p).read(), re.S | re.M)
+            if m:
+                return float(m.group(1)), float(m.group(2)), d
+    return None
+units = collections.OrderedDict()
+for unit, area, macro, n in rows:
+    units.setdefault(unit, [float(area), []])[1].append((macro, int(n)))
+sizes = {m: lef_size(m) for _, _, m, _ in rows}
+if not all(sizes.values()):
+    missing = sorted(m for m, s in sizes.items() if not s)
+    print("macro area: PDK not available (no LEF for " + ", ".join(missing) + ")")
+    sys.exit(0)
+print("Hard macros (LEF SIZE from " + ", ".join(sorted({s[2] for s in sizes.values()})) + ")")
+print(f"{'unit':<40} {'macro':<36} {'n':>3} {'macro um^2':>11} {'total um^2':>12}")
+for unit, (area, macros) in units.items():
+    m_area = 0.0
+    for macro, n in macros:
+        w, h, _ = sizes[macro]
+        m_area += n * w * h
+        print(f"{unit:<40} {macro:<36} {n:>3} {n * w * h:>11.2f}")
+    print(f"{unit:<40} {'total incl. macros':<36} {'':>3} {m_area:>11.2f} {area + m_area:>12.2f}")
+PY
+fi
 
 [ "$fails" -eq 0 ]

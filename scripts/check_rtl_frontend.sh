@@ -4,8 +4,14 @@
 #   read_verilog -defer -noautowire -sv <file>...; hierarchy -check -top <top>
 # Units: each src/<block>/<block>.f (top module <block>) plus the Tiny Tapeout
 # top from info.yaml. Prints PASS/FAIL per unit; exits 1 if any unit fails.
+# Hard-macro black boxes in verification/stubs/*.v (e.g. the SRAM macro, which
+# comes from the PDK) are read first with read_verilog -lib, so a unit that
+# instantiates a macro is checked without the PDK.
 # Also fails if a *.v / *.sv file under src/ is in no unit (forgotten in the
-# .f / info.yaml, so neither CI nor hardening would see it).
+# .f / info.yaml, so neither CI nor hardening would see it), and if the
+# top-level test does not test the hardened top: info.yaml source_files must
+# equal test/Makefile PROJECT_SOURCES (as a set), and test/tb.v must
+# instantiate info.yaml's top_module.
 #
 #   scripts/check_rtl_frontend.sh            (env: YOSYS=yosys)
 set -euo pipefail
@@ -59,6 +65,7 @@ while IFS=$'\t' read -r name top files; do
 		echo "FAIL  $name  (missing:$miss)"; fails=$((fails + 1)); continue
 	fi
 	cmd=""
+	for f in verification/stubs/*.v; do [ -f "$f" ] && cmd+="read_verilog -lib -sv $f; "; done
 	for f in $files; do cmd+="read_verilog -defer -noautowire -sv $f; "; done
 	cmd+="hierarchy -check -top $top"
 	if "$YOSYS" -q -p "$cmd" > "$log" 2>&1; then
@@ -97,6 +104,41 @@ if [ "${#unlisted[@]}" -gt 0 ]; then
 	fails=$((fails + 1))
 else
 	echo "PASS  every RTL file under src/ is listed"
+fi
+
+# The top-level test (test/) must test the top that gets hardened (info.yaml).
+if mismatch=$(python3 - <<'PY'
+import re, sys, yaml
+project = yaml.safe_load(open("info.yaml"))["project"]
+top, info_src = project["top_module"], set(project["source_files"])
+# PROJECT_SOURCES: every assignment (=, :=, ?=, +=), with \ continuations.
+text = re.sub(r"\\\n", " ", open("test/Makefile").read())
+mk_src, seen = set(), False
+for m in re.finditer(r"^PROJECT_SOURCES\s*([:?+]?=)(.*)$", text, re.M):
+    words = set(m.group(2).split("#", 1)[0].split())
+    mk_src = mk_src | words if m.group(1) == "+=" else words
+    seen = True
+errors = []
+if not seen:
+    errors.append("test/Makefile has no PROJECT_SOURCES")
+elif mk_src != info_src:
+    for f in sorted(info_src - mk_src):
+        errors.append(f"in info.yaml source_files but not in test/Makefile PROJECT_SOURCES: {f}")
+    for f in sorted(mk_src - info_src):
+        errors.append(f"in test/Makefile PROJECT_SOURCES but not in info.yaml source_files: {f}")
+tb = re.sub(r"//[^\n]*|/\*.*?\*/", "", open("test/tb.v").read(), flags=re.S)
+if not re.search(r"\b" + re.escape(top) + r"\s*(#\s*\(.*?\)\s*)?[A-Za-z_]\w*\s*\(", tb, re.S):
+    errors.append(f"test/tb.v does not instantiate info.yaml top_module {top}")
+for e in errors:
+    print(f"      {e}")
+sys.exit(1 if errors else 0)
+PY
+); then
+	echo "PASS  test/ tests the hardened top (info.yaml matches test/Makefile; tb.v instantiates the top)"
+else
+	echo "FAIL  test/ does not test the hardened top from info.yaml:"
+	printf '%s\n' "$mismatch"
+	fails=$((fails + 1))
 fi
 
 echo "$(wc -l <<< "$units") unit(s), $fails failed"

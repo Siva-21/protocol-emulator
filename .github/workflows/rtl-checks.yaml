@@ -3,9 +3,10 @@ name: rtl-checks
 #   frontend    scripts/check_rtl_frontend.sh  Yosys built-in reader, as LibreLane uses it
 #   lint        scripts/lint_rtl.sh            Verilator -Wall
 #   block-area  scripts/block_area.sh          informational cell/area table (job summary)
+# push only (no pull_request): a PR branch's pushes already run it, so a
+# pull_request trigger would run every check twice per commit.
 on:
   push:
-  pull_request:
   workflow_dispatch:
 
 permissions:
