@@ -1,14 +1,9 @@
 # Top-level test
 
-A cocotb test for the Tiny Tapeout top `tt_um_protocol_emulator`
+A cocotb test for the Tiny Tapeout top `tt_um_protocol_emulator_placeholder`
 (`tb.v` wraps it; `test.py` drives it). It starts a 50 MHz clock, holds `rst_n`
 low for 10 cycles, releases it, waits 5 cycles, then checks that `uo_out` and
-`uio_oe` are 0 with no X/Z: after reset every pad is 'none' and MISO idles at 0.
-
-The main subsystem's SRAM macro is simulated with the PDK's functional model
-when `$PDK_ROOT/ihp-sg13cmos5l/libs.ref/sg13cmos5l_sram/verilog/` exists, else
-with the ports-only black box `verification/stubs/` (enough while no test uses
-the SRAM; the GitHub `test` job has no PDK).
+`uio_oe` are 0 with no X/Z.
 
 ## How to run
 

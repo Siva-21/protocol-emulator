@@ -1,5 +1,10 @@
 ## How it works
 
+> **Status:** this shuttle entry is still the placeholder top
+> (`tt_um_protocol_emulator_placeholder`). The integrated design described below
+> is checked as RTL in the repository; hardening it (SRAM placement, power grid,
+> timing) is work in progress.
+
 The Protocol Emulator is a chip that emulates digital communication protocols under
 the control of a host. A host (for example the RP2350 on the Tiny Tapeout demo board)
 talks to it over a 4-wire SPI link (mode 0, bytes MSB-first). Through that link the

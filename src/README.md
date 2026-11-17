@@ -6,12 +6,17 @@ async reset to 0, except the pin-layer input chains (no reset, D-PL-1).
 
 One folder per block, `src/<block>/`, with the file list `src/<block>/<block>.f`
 (paths relative to the repo root, `#` comments). The scripts in `scripts/` find
-the blocks through these lists. `tt_um_protocol_emulator.v` is the Tiny Tapeout
-top; `info.yaml` lists every file the top needs.
+the blocks through these lists. The hardened Tiny Tapeout top, the one
+`info.yaml` names, is still `tt_um_protocol_emulator_placeholder.v`.
 
 ## Tiny Tapeout top
 
-`tt_um_protocol_emulator.v`: integration spec
+Integrated top `tt_um_protocol_emulator/tt_um_protocol_emulator.v`, file list
+`tt_um_protocol_emulator/tt_um_protocol_emulator.f` (every RTL file it needs, the
+top last). `rtl-checks` checks it as a unit (frontend, lint, area). It is not
+hardened yet: hardening it (SRAM placement, power grid, timing) is work in progress on branch `pd/sram-integration`; the hardened top is still the placeholder (`tt_um_protocol_emulator_placeholder.v`).
+
+Integration spec
 `docs/Integration_spec/Top_level_Integration_Specification_v1.pdf` (v1.0,
 15 Nov 2026), D-TOP-1 to D-TOP-6 and D-TOP-8 to D-TOP-10 confirmed by the owner
 on 15 Nov 2026. Eight instances (`u_rst`, `u_hl`, `u_bus`, `u_mcu`, `u_sys`,

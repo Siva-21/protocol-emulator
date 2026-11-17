@@ -1,6 +1,12 @@
 /*
  * tt_um_protocol_emulator
  *
+ * Status: the integrated top. rtl-checks checks it as a unit
+ * (src/tt_um_protocol_emulator/tt_um_protocol_emulator.f: frontend, lint,
+ * area). It is not hardened yet: hardening it (SRAM placement, power grid,
+ * timing) is work in progress on branch pd/sram-integration. The hardened
+ * Tiny Tapeout top (info.yaml) is still src/tt_um_protocol_emulator_placeholder.v.
+ *
  * Tiny Tapeout top of the Protocol Emulator (integration spec
  * docs/Integration_spec/Top_level_Integration_Specification_v1.pdf v1.0, §4.2;
  * D-TOP-1 to D-TOP-6 and D-TOP-8 to D-TOP-10 confirmed by the owner on
