@@ -13,6 +13,46 @@ blocks (integration spec `docs/Integration_spec/Top_level_Integration_Specificat
 `rtl-checks` checks it as a unit; hardening it (SRAM placement, power grid, timing) is work in progress on branch `pd/sram-integration`; the hardened top is still the placeholder (`src/tt_um_protocol_emulator_placeholder.v`,
 listed in `info.yaml`). See [src/README.md](src/README.md) for the blocks and their status.
 
+## Getting started (one-time setup)
+
+1. **Prerequisites:** an x86_64 Linux machine, or Windows with WSL2 (Ubuntu), and
+   about **25 GB** of free disk. On WSL2, run everything below inside the WSL
+   shell and keep the repo in the WSL file system (`~`), not under `/mnt/c`.
+2. **Docker:** install Docker CE ([docs.docker.com/engine/install](https://docs.docker.com/engine/install/);
+   on WSL2, Docker CE inside WSL or Docker Desktop with WSL integration). Let your
+   user run it without sudo, then log out and back in:
+   ```bash
+   sudo usermod -aG docker $USER
+   docker run --rm hello-world          # must work WITHOUT sudo
+   ```
+3. **Designs folder:** the container only sees `~/edatools/designs` (mounted as
+   `/foss/designs`), so the repo must be cloned **into** it:
+   ```bash
+   mkdir -p ~/edatools/designs
+   cd ~/edatools/designs
+   git clone git@github.com:Siva-21/protocol-emulator.git   # or the https:// URL
+   cd protocol-emulator
+   ```
+4. **Image** (~4.5 GB download, 18.7 GB unpacked):
+   ```bash
+   docker pull ghcr.io/siva-21/pe-verif:2026.10
+   ```
+5. **Git identity** (once per machine):
+   ```bash
+   git config --global user.name  "Your Name"
+   git config --global user.email "you@example.com"
+   ```
+6. **Desktop password** (optional): the browser desktop
+   (`verification/docker/pe-desktop.sh`) generates one on first use in
+   `~/edatools/.vnc_password`; `pe-desktop.sh url` prints the login URL.
+7. **First check**, from the repo root; every unit must report `PASS`. The
+   container starts in `/foss/designs`, so the script is given by its path there:
+   ```bash
+   verification/docker/pe-shell.sh /foss/designs/protocol-emulator/scripts/check_rtl_frontend.sh
+   ```
+8. **Next:** the flows step by step in [docs/WORKFLOWS.md](docs/WORKFLOWS.md),
+   branches, commits and PRs in [CONTRIBUTING.md](CONTRIBUTING.md).
+
 ## Repository layout
 
 | Path | Contents |
