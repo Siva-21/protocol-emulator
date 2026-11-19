@@ -2,13 +2,17 @@
 # Shell in the pe-verif image (IIC-OSIC-TOOLS + verification extras, see README.md).
 #
 #   verification/docker/pe-shell.sh               interactive bash
-#   verification/docker/pe-shell.sh <cmd> [args]  run one command, e.g.
-#       verification/docker/pe-shell.sh make -C /foss/designs/protocol-emulator/test
+#   verification/docker/pe-shell.sh <cmd> [args]  run one command, e.g. from the repo root:
+#       verification/docker/pe-shell.sh scripts/check_rtl_frontend.sh
 #
 # $DESIGNS is mounted at /foss/designs; this repo is expected below it
-# (default: /foss/designs/protocol-emulator). Runs as your UID/GID, so files
-# written there stay yours. The container is removed on exit (--rm); a second
-# call while a shell is open joins the same container (docker exec).
+# (default: /foss/designs/protocol-emulator). The shell or command starts in the
+# container folder that matches the host's current folder when that is inside
+# $DESIGNS (e.g. repo root -> /foss/designs/protocol-emulator), so relative
+# paths work as on the host; elsewhere it starts in /foss/designs.
+# Runs as your UID/GID, so files written there stay yours. The container is
+# removed on exit (--rm); a second call while a shell is open joins the same
+# container (docker exec), also in the folder matching the current one.
 # Every variable below can be overridden from the environment.
 set -euo pipefail
 
@@ -37,12 +41,22 @@ fi
 tty_flags=(-i)
 [ -t 0 ] && [ -t 1 ] && tty_flags=(-it)
 
+# Container folder matching the host's current folder: /foss/designs/<path> if
+# the current folder is $DESIGNS or below it, else /foss/designs. Symlinks are
+# resolved on both sides (pwd -P).
+designs_real="$(cd "$DESIGNS" && pwd -P)"
+here_real="$(pwd -P)"
+case "$here_real/" in
+	"$designs_real"/*) WORKDIR="/foss/designs${here_real#"$designs_real"}" ;;
+	*)                 WORKDIR=/foss/designs ;;
+esac
+
 state="$(docker inspect -f '{{.State.Running}}' "$CONTAINER_NAME" 2>/dev/null || true)"
 if [ "$state" = "true" ]; then
 	# Shell already open: join it. docker exec skips the entrypoint, so call it
 	# explicitly; it sets up PATH/env and the nss_wrapper user, as for docker run.
 	[ $# -gt 0 ] || set -- /bin/bash
-	exec docker exec "${tty_flags[@]}" -w /foss/designs "$CONTAINER_NAME" \
+	exec docker exec "${tty_flags[@]}" -w "$WORKDIR" "$CONTAINER_NAME" \
 		/dockerstartup/scripts/ui_startup.sh -s "$@"
 elif [ -n "$state" ]; then
 	echo "[ERROR] A stopped container named $CONTAINER_NAME exists (left by an older start script)." >&2
@@ -57,7 +71,8 @@ args=(--rm "${tty_flags[@]}" --name "$CONTAINER_NAME"
 	-e "DISPLAY=${DISPLAY:-:0}"
 	-e "PDK=$PDK"
 	--security-opt seccomp=unconfined
-	-v "$DESIGNS:/foss/designs:rw")
+	-v "$DESIGNS:/foss/designs:rw"
+	-w "$WORKDIR")
 if [ $# -gt 0 ]; then
 	exec docker run "${args[@]}" "$IMAGE" -s "$@"
 fi

@@ -7,11 +7,22 @@ low for 10 cycles, releases it, waits 5 cycles, then checks that `uo_out` and
 
 ## How to run
 
+From the repo root (or `cd test` and drop `-C test`; both work):
+
 ```sh
-make -B                # RTL, Verilator (default; Icarus if verilator is not on PATH)
-make -B SIM=icarus     # RTL, Icarus
-make -B GATES=yes      # gate level, Icarus (needs gate_level_netlist.v, see below)
+make -C test -B                # RTL, Verilator (default; Icarus if verilator is not on PATH)
+make -C test -B SIM=icarus     # RTL, Icarus
+make -C test -B GATES=yes      # gate level, Icarus (needs gate_level_netlist.v, see below)
 ```
+
+On the host, the same through pe-verif, from the repo root:
+
+```sh
+verification/docker/pe-shell.sh make -C test -B
+```
+
+The Makefile sets `PWD := $(CURDIR)`, so its paths (`$(PWD)/../src`, `tb.v`,
+`gate_level_netlist.v`) are relative to `test/` whichever way it is called.
 
 For gate level, harden the design and copy the netlist to
 `test/gate_level_netlist.v` (for IHP: `runs/wokwi/final/nl/<top>.nl.v`). `PDK_ROOT`

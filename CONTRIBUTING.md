@@ -76,7 +76,7 @@ All changes must be submitted through Pull Requests (PRs) targeting `main`.
    scripts/check_rtl_frontend.sh
    scripts/lint_rtl.sh
    ```
-   For changes in `src/` or `test/`, also run the top-level test (`cd test && make -B`);
+   For changes in `src/` or `test/`, also run the top-level test (`make -C test -B`);
    see [README.md](README.md#running-the-flows-locally) for the other flows.
 3. Review your own changes.
 4. Run `git status` and stage explicit paths (`git add <paths>`), not `git add .`,
