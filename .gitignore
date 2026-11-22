@@ -26,9 +26,25 @@ test/gate_level_netlist.v
 *.fst
 
 # SymbiYosys work directories: every subdirectory of a block's formal folder
-# (verification/formal/<block>/<block>_<task>/). The .sby and *_props.sv
-# sources are files there, so they stay tracked.
+# (old layout: verification/formal/<block>/<block>_<task>/). The .sby and
+# *_props.sv sources are files there, so they stay tracked.
 verification/formal/*/*/
+# fv_<block> layout: src/, testplan/, issues/ are tracked; run/ only run.sh
+# (and .gitkeep). sby work folders land in run/ (--prefix); a work folder
+# created in src/ by a run without --prefix stays ignored too.
+!verification/formal/fv_*/src/
+!verification/formal/fv_*/testplan/
+!verification/formal/fv_*/issues/
+!verification/formal/fv_*/run/
+verification/formal/fv_*/src/*/
+verification/formal/fv_*/run/*
+!verification/formal/fv_*/run/run.sh
+!verification/formal/fv_*/run/.gitkeep
+# Failing-property evidence: traces and logs are tracked only under issues/
+# (overrides the global *.vcd / *.fst / *.log rules above; keep this after them).
+!verification/formal/fv_*/issues/**/*.vcd
+!verification/formal/fv_*/issues/**/*.fst
+!verification/formal/fv_*/issues/**/*.log
 
 # Verification reports
 verification/reports/

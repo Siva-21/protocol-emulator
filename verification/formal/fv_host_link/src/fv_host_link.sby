@@ -1,0 +1,50 @@
+# fv_host_link.sby: SymbiYosys job for host_link (src/host_link/).
+# Testplan: ../testplan/host_link_fv_testplan.md
+#
+# Run from ../run/ (sby resolves [files] against the current directory):
+#   cd verification/formal/fv_host_link/run
+#   sby -f --prefix fv_host_link ../src/fv_host_link.sby [prove|bmc|cover]
+# Work folders: run/fv_host_link_<task>/ (git-ignored).
+#
+# Tasks:
+#   prove  unbounded proof of all asserts (abc pdr, --keep-going: one trace per
+#          failing assert, engine_0/trace_<n>.vcd); stopped after 2 hours
+#   bmc    bounded check, quick counterexamples near reset (smtbmc bitwuzla)
+#   cover  reach every cover (engine_0/trace<n>.vcd); depth 600 covers a full
+#          frame plus a second access; stopped after 2 hours
+
+[tasks]
+prove
+bmc
+cover
+
+[options]
+prove: mode prove
+prove: timeout 7200
+bmc:   mode bmc
+bmc:   depth 100
+cover: mode cover
+cover: depth 600
+cover: timeout 7200
+
+[engines]
+prove: abc --keep-going pdr
+bmc:   smtbmc bitwuzla
+cover: smtbmc bitwuzla
+
+[script]
+# RTL in host_link.f order, then the property files
+read_slang host_link_sync.sv host_link_ctrl.sv host_link_dp.sv host_link.sv fv_host_link_host_if.sv fv_host_link_sysbus_if.sv fv_host_link_e2e.sv fv_host_link.sv --top host_link
+prep -top host_link
+
+[files]
+# RTL from src/host_link/host_link.f, relative to run/
+../../../../src/host_link/host_link_sync.sv
+../../../../src/host_link/host_link_ctrl.sv
+../../../../src/host_link/host_link_dp.sv
+../../../../src/host_link/host_link.sv
+# property files
+../src/fv_host_link_host_if.sv
+../src/fv_host_link_sysbus_if.sv
+../src/fv_host_link_e2e.sv
+../src/fv_host_link.sv

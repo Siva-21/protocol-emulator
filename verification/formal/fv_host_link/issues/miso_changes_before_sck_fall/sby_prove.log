@@ -1,0 +1,334 @@
+SBY  2:09:58 [fv_host_link_prove] Removing directory '/foss/designs/protocol-emulator/verification/formal/fv_host_link/run/fv_host_link_prove'.
+SBY  2:09:58 [fv_host_link_prove] Copy '/foss/designs/protocol-emulator/verification/formal/fv_host_link/run/../../../../src/host_link/host_link_sync.sv' to '/foss/designs/protocol-emulator/verification/formal/fv_host_link/run/fv_host_link_prove/src/host_link_sync.sv'.
+SBY  2:09:58 [fv_host_link_prove] Copy '/foss/designs/protocol-emulator/verification/formal/fv_host_link/run/../../../../src/host_link/host_link_ctrl.sv' to '/foss/designs/protocol-emulator/verification/formal/fv_host_link/run/fv_host_link_prove/src/host_link_ctrl.sv'.
+SBY  2:09:58 [fv_host_link_prove] Copy '/foss/designs/protocol-emulator/verification/formal/fv_host_link/run/../../../../src/host_link/host_link_dp.sv' to '/foss/designs/protocol-emulator/verification/formal/fv_host_link/run/fv_host_link_prove/src/host_link_dp.sv'.
+SBY  2:09:58 [fv_host_link_prove] Copy '/foss/designs/protocol-emulator/verification/formal/fv_host_link/run/../../../../src/host_link/host_link.sv' to '/foss/designs/protocol-emulator/verification/formal/fv_host_link/run/fv_host_link_prove/src/host_link.sv'.
+SBY  2:09:58 [fv_host_link_prove] Copy '/foss/designs/protocol-emulator/verification/formal/fv_host_link/run/../src/fv_host_link_host_if.sv' to '/foss/designs/protocol-emulator/verification/formal/fv_host_link/run/fv_host_link_prove/src/fv_host_link_host_if.sv'.
+SBY  2:09:58 [fv_host_link_prove] Copy '/foss/designs/protocol-emulator/verification/formal/fv_host_link/run/../src/fv_host_link_sysbus_if.sv' to '/foss/designs/protocol-emulator/verification/formal/fv_host_link/run/fv_host_link_prove/src/fv_host_link_sysbus_if.sv'.
+SBY  2:09:58 [fv_host_link_prove] Copy '/foss/designs/protocol-emulator/verification/formal/fv_host_link/run/../src/fv_host_link_e2e.sv' to '/foss/designs/protocol-emulator/verification/formal/fv_host_link/run/fv_host_link_prove/src/fv_host_link_e2e.sv'.
+SBY  2:09:58 [fv_host_link_prove] Copy '/foss/designs/protocol-emulator/verification/formal/fv_host_link/run/../src/fv_host_link.sv' to '/foss/designs/protocol-emulator/verification/formal/fv_host_link/run/fv_host_link_prove/src/fv_host_link.sv'.
+SBY  2:09:58 [fv_host_link_prove] engine_0: abc --keep-going pdr
+SBY  2:09:58 [fv_host_link_prove] base: starting process "cd fv_host_link_prove/src; yosys -ql ../model/design.log ../model/design.ys"
+SBY  2:09:58 [fv_host_link_prove] base: finished (returncode=0)
+SBY  2:09:58 [fv_host_link_prove] prep: starting process "cd fv_host_link_prove/model; yosys -ql design_prep.log design_prep.ys"
+SBY  2:09:58 [fv_host_link_prove] prep: finished (returncode=0)
+SBY  2:09:58 [fv_host_link_prove] aig: starting process "cd fv_host_link_prove/model; yosys -ql design_aiger.log design_aiger.ys"
+SBY  2:09:58 [fv_host_link_prove] aig: Warning: Treating undriven bit host_link.\clk like $anyseq.
+SBY  2:09:58 [fv_host_link_prove] aig: Warning: Treating undriven bit host_link.\spi_sck_i like $anyseq.
+SBY  2:09:58 [fv_host_link_prove] aig: Warning: Treating undriven bit host_link.\spi_mosi_i like $anyseq.
+SBY  2:09:58 [fv_host_link_prove] aig: Warning: Treating undriven bit host_link.\spi_csn_i like $anyseq.
+SBY  2:09:58 [fv_host_link_prove] aig: Warning: Treating undriven bit host_link.\rst_n like $anyseq.
+SBY  2:09:58 [fv_host_link_prove] aig: Warning: Treating undriven bit host_link.\bus_wready_i like $anyseq.
+SBY  2:09:58 [fv_host_link_prove] aig: Warning: Treating undriven bit host_link.\bus_rready_i like $anyseq.
+SBY  2:09:58 [fv_host_link_prove] aig: Warning: Treating undriven bit host_link.\bus_rdata_i [0] like $anyseq.
+SBY  2:09:58 [fv_host_link_prove] aig: Warning: Treating undriven bit host_link.\bus_rdata_i [1] like $anyseq.
+SBY  2:09:58 [fv_host_link_prove] aig: Warning: Treating undriven bit host_link.\bus_rdata_i [2] like $anyseq.
+SBY  2:09:58 [fv_host_link_prove] aig: Warning: Treating undriven bit host_link.\bus_rdata_i [3] like $anyseq.
+SBY  2:09:58 [fv_host_link_prove] aig: Warning: Treating undriven bit host_link.\bus_rdata_i [4] like $anyseq.
+SBY  2:09:58 [fv_host_link_prove] aig: Warning: Treating undriven bit host_link.\bus_rdata_i [5] like $anyseq.
+SBY  2:09:58 [fv_host_link_prove] aig: Warning: Treating undriven bit host_link.\bus_rdata_i [6] like $anyseq.
+SBY  2:09:58 [fv_host_link_prove] aig: Warning: Treating undriven bit host_link.\bus_rdata_i [7] like $anyseq.
+SBY  2:09:58 [fv_host_link_prove] aig: Warning: Treating undriven bit host_link.\bus_rdata_i [8] like $anyseq.
+SBY  2:09:58 [fv_host_link_prove] aig: Warning: Treating undriven bit host_link.\bus_rdata_i [9] like $anyseq.
+SBY  2:09:58 [fv_host_link_prove] aig: Warning: Treating undriven bit host_link.\bus_rdata_i [10] like $anyseq.
+SBY  2:09:58 [fv_host_link_prove] aig: Warning: Treating undriven bit host_link.\bus_rdata_i [11] like $anyseq.
+SBY  2:09:58 [fv_host_link_prove] aig: Warning: Treating undriven bit host_link.\bus_rdata_i [12] like $anyseq.
+SBY  2:09:58 [fv_host_link_prove] aig: Warning: Treating undriven bit host_link.\bus_rdata_i [13] like $anyseq.
+SBY  2:09:58 [fv_host_link_prove] aig: Warning: Treating undriven bit host_link.\bus_rdata_i [14] like $anyseq.
+SBY  2:09:58 [fv_host_link_prove] aig: Warning: Treating undriven bit host_link.\bus_rdata_i [15] like $anyseq.
+SBY  2:09:58 [fv_host_link_prove] aig: Warning: Treating a total of 23 undriven bits in host_link like $anyseq.
+SBY  2:09:58 [fv_host_link_prove] aig: finished (returncode=0)
+SBY  2:09:58 [fv_host_link_prove] engine_0: starting process "cd fv_host_link_prove; yosys-abc -c 'read_aiger model/design_aiger.aig; fold; strash; pdr -v -l -a -X engine_0/trace_; write_cex -a engine_0/trace.aiw'"
+SBY  2:09:58 [fv_host_link_prove] engine_0: ======== ABC command line "read_aiger model/design_aiger.aig; fold; strash; pdr -v -l -a -X engine_0/trace_; write_cex -a engine_0/trace.aiw"
+... (abc pdr progress lines removed)
+SBY  2:10:40 [fv_host_link_prove] engine_0: Writing CEX for output 14 to engine_0/trace_14.aiw
+SBY  2:10:40 [fv_host_link_prove] engine_0: Output 14 was asserted in frame 200 (200) (solved  1 out of 24 outputs).
+SBY  2:10:40 [fv_host_link_prove] engine_0: starting process "cd fv_host_link_prove; yosys-witness aiw2yw engine_0/trace_14.aiw model/design_aiger.ywa engine_0/trace_14_aiw.yw"
+SBY  2:10:40 [fv_host_link_prove] engine_0: Converting AIGER witness trace 'engine_0/trace_14.aiw' to Yosys witness trace 'engine_0/trace_14_aiw.yw'...
+SBY  2:10:40 [fv_host_link_prove] engine_0: Using Yosys witness AIGER map file 'model/design_aiger.ywa'
+SBY  2:10:40 [fv_host_link_prove] smt2: starting process "cd fv_host_link_prove/model; yosys -ql design_smt2.log design_smt2.ys"
+SBY  2:10:41 [fv_host_link_prove] engine_0: Converted 272 time steps.
+SBY  2:10:41 [fv_host_link_prove] engine_0: finished (returncode=0)
+SBY  2:10:41 [fv_host_link_prove] smt2: finished (returncode=0)
+SBY  2:10:41 [fv_host_link_prove] engine_0: starting process "cd fv_host_link_prove; yosys-smtbmc -s yices --noprogress --append 0 --dump-vcd engine_0/trace_14.vcd --dump-yw engine_0/trace_14.yw --dump-vlogtb engine_0/trace_14_tb.v --dump-smtc engine_0/trace_14.smtc --yw engine_0/trace_14_aiw.yw model/design_smt2.smt2"
+SBY  2:10:41 [fv_host_link_prove] engine_0: ##   0:00:00  Solver: yices
+SBY  2:10:41 [fv_host_link_prove] engine_0: ##   0:00:00  Skipping step 0..
+SBY  2:10:41 [fv_host_link_prove] engine_0: ##   0:00:00  Skipping step 1..
+SBY  2:10:41 [fv_host_link_prove] engine_0: ##   0:00:00  Skipping step 2..
+SBY  2:10:41 [fv_host_link_prove] engine_0: ##   0:00:00  Skipping step 3..
+SBY  2:10:41 [fv_host_link_prove] engine_0: ##   0:00:00  Skipping step 4..
+SBY  2:10:41 [fv_host_link_prove] engine_0: ##   0:00:00  Skipping step 5..
+SBY  2:10:41 [fv_host_link_prove] engine_0: ##   0:00:00  Skipping step 6..
+SBY  2:10:41 [fv_host_link_prove] engine_0: ##   0:00:00  Skipping step 7..
+SBY  2:10:41 [fv_host_link_prove] engine_0: ##   0:00:00  Skipping step 8..
+SBY  2:10:41 [fv_host_link_prove] engine_0: ##   0:00:00  Skipping step 9..
+SBY  2:10:41 [fv_host_link_prove] engine_0: ##   0:00:00  Skipping step 10..
+SBY  2:10:41 [fv_host_link_prove] engine_0: ##   0:00:00  Skipping step 11..
+SBY  2:10:41 [fv_host_link_prove] engine_0: ##   0:00:00  Skipping step 12..
+SBY  2:10:41 [fv_host_link_prove] engine_0: ##   0:00:00  Skipping step 13..
+SBY  2:10:41 [fv_host_link_prove] engine_0: ##   0:00:00  Skipping step 14..
+SBY  2:10:41 [fv_host_link_prove] engine_0: ##   0:00:00  Skipping step 15..
+SBY  2:10:41 [fv_host_link_prove] engine_0: ##   0:00:00  Skipping step 16..
+SBY  2:10:41 [fv_host_link_prove] engine_0: ##   0:00:00  Skipping step 17..
+SBY  2:10:41 [fv_host_link_prove] engine_0: ##   0:00:00  Skipping step 18..
+SBY  2:10:41 [fv_host_link_prove] engine_0: ##   0:00:00  Skipping step 19..
+SBY  2:10:41 [fv_host_link_prove] engine_0: ##   0:00:00  Skipping step 20..
+SBY  2:10:41 [fv_host_link_prove] engine_0: ##   0:00:00  Skipping step 21..
+SBY  2:10:41 [fv_host_link_prove] engine_0: ##   0:00:00  Skipping step 22..
+SBY  2:10:41 [fv_host_link_prove] engine_0: ##   0:00:00  Skipping step 23..
+SBY  2:10:41 [fv_host_link_prove] engine_0: ##   0:00:00  Skipping step 24..
+SBY  2:10:41 [fv_host_link_prove] engine_0: ##   0:00:00  Skipping step 25..
+SBY  2:10:41 [fv_host_link_prove] engine_0: ##   0:00:00  Skipping step 26..
+SBY  2:10:41 [fv_host_link_prove] engine_0: ##   0:00:00  Skipping step 27..
+SBY  2:10:41 [fv_host_link_prove] engine_0: ##   0:00:00  Skipping step 28..
+SBY  2:10:41 [fv_host_link_prove] engine_0: ##   0:00:00  Skipping step 29..
+SBY  2:10:41 [fv_host_link_prove] engine_0: ##   0:00:00  Skipping step 30..
+SBY  2:10:41 [fv_host_link_prove] engine_0: ##   0:00:00  Skipping step 31..
+SBY  2:10:41 [fv_host_link_prove] engine_0: ##   0:00:00  Skipping step 32..
+SBY  2:10:41 [fv_host_link_prove] engine_0: ##   0:00:00  Skipping step 33..
+SBY  2:10:41 [fv_host_link_prove] engine_0: ##   0:00:00  Skipping step 34..
+SBY  2:10:41 [fv_host_link_prove] engine_0: ##   0:00:00  Skipping step 35..
+SBY  2:10:41 [fv_host_link_prove] engine_0: ##   0:00:00  Skipping step 36..
+SBY  2:10:41 [fv_host_link_prove] engine_0: ##   0:00:00  Skipping step 37..
+SBY  2:10:41 [fv_host_link_prove] engine_0: ##   0:00:00  Skipping step 38..
+SBY  2:10:41 [fv_host_link_prove] engine_0: ##   0:00:00  Skipping step 39..
+SBY  2:10:41 [fv_host_link_prove] engine_0: ##   0:00:00  Skipping step 40..
+SBY  2:10:41 [fv_host_link_prove] engine_0: ##   0:00:00  Skipping step 41..
+SBY  2:10:41 [fv_host_link_prove] engine_0: ##   0:00:00  Skipping step 42..
+SBY  2:10:41 [fv_host_link_prove] engine_0: ##   0:00:00  Skipping step 43..
+SBY  2:10:41 [fv_host_link_prove] engine_0: ##   0:00:00  Skipping step 44..
+SBY  2:10:41 [fv_host_link_prove] engine_0: ##   0:00:00  Skipping step 45..
+SBY  2:10:41 [fv_host_link_prove] engine_0: ##   0:00:00  Skipping step 46..
+SBY  2:10:41 [fv_host_link_prove] engine_0: ##   0:00:00  Skipping step 47..
+SBY  2:10:41 [fv_host_link_prove] engine_0: ##   0:00:00  Skipping step 48..
+SBY  2:10:41 [fv_host_link_prove] engine_0: ##   0:00:00  Skipping step 49..
+SBY  2:10:41 [fv_host_link_prove] engine_0: ##   0:00:00  Skipping step 50..
+SBY  2:10:41 [fv_host_link_prove] engine_0: ##   0:00:00  Skipping step 51..
+SBY  2:10:41 [fv_host_link_prove] engine_0: ##   0:00:00  Skipping step 52..
+SBY  2:10:41 [fv_host_link_prove] engine_0: ##   0:00:00  Skipping step 53..
+SBY  2:10:41 [fv_host_link_prove] engine_0: ##   0:00:00  Skipping step 54..
+SBY  2:10:41 [fv_host_link_prove] engine_0: ##   0:00:00  Skipping step 55..
+SBY  2:10:41 [fv_host_link_prove] engine_0: ##   0:00:00  Skipping step 56..
+SBY  2:10:41 [fv_host_link_prove] engine_0: ##   0:00:00  Skipping step 57..
+SBY  2:10:41 [fv_host_link_prove] engine_0: ##   0:00:00  Skipping step 58..
+SBY  2:10:41 [fv_host_link_prove] engine_0: ##   0:00:00  Skipping step 59..
+SBY  2:10:41 [fv_host_link_prove] engine_0: ##   0:00:00  Skipping step 60..
+SBY  2:10:41 [fv_host_link_prove] engine_0: ##   0:00:00  Skipping step 61..
+SBY  2:10:41 [fv_host_link_prove] engine_0: ##   0:00:00  Skipping step 62..
+SBY  2:10:41 [fv_host_link_prove] engine_0: ##   0:00:00  Skipping step 63..
+SBY  2:10:41 [fv_host_link_prove] engine_0: ##   0:00:00  Skipping step 64..
+SBY  2:10:41 [fv_host_link_prove] engine_0: ##   0:00:00  Skipping step 65..
+SBY  2:10:41 [fv_host_link_prove] engine_0: ##   0:00:00  Skipping step 66..
+SBY  2:10:41 [fv_host_link_prove] engine_0: ##   0:00:00  Skipping step 67..
+SBY  2:10:41 [fv_host_link_prove] engine_0: ##   0:00:00  Skipping step 68..
+SBY  2:10:41 [fv_host_link_prove] engine_0: ##   0:00:00  Skipping step 69..
+SBY  2:10:41 [fv_host_link_prove] engine_0: ##   0:00:00  Skipping step 70..
+SBY  2:10:41 [fv_host_link_prove] engine_0: ##   0:00:00  Skipping step 71..
+SBY  2:10:41 [fv_host_link_prove] engine_0: ##   0:00:00  Skipping step 72..
+SBY  2:10:41 [fv_host_link_prove] engine_0: ##   0:00:00  Skipping step 73..
+SBY  2:10:41 [fv_host_link_prove] engine_0: ##   0:00:00  Skipping step 74..
+SBY  2:10:41 [fv_host_link_prove] engine_0: ##   0:00:00  Skipping step 75..
+SBY  2:10:41 [fv_host_link_prove] engine_0: ##   0:00:00  Skipping step 76..
+SBY  2:10:41 [fv_host_link_prove] engine_0: ##   0:00:00  Skipping step 77..
+SBY  2:10:41 [fv_host_link_prove] engine_0: ##   0:00:00  Skipping step 78..
+SBY  2:10:41 [fv_host_link_prove] engine_0: ##   0:00:00  Skipping step 79..
+SBY  2:10:41 [fv_host_link_prove] engine_0: ##   0:00:00  Skipping step 80..
+SBY  2:10:41 [fv_host_link_prove] engine_0: ##   0:00:00  Skipping step 81..
+SBY  2:10:41 [fv_host_link_prove] engine_0: ##   0:00:00  Skipping step 82..
+SBY  2:10:41 [fv_host_link_prove] engine_0: ##   0:00:00  Skipping step 83..
+SBY  2:10:41 [fv_host_link_prove] engine_0: ##   0:00:00  Skipping step 84..
+SBY  2:10:41 [fv_host_link_prove] engine_0: ##   0:00:00  Skipping step 85..
+SBY  2:10:41 [fv_host_link_prove] engine_0: ##   0:00:00  Skipping step 86..
+SBY  2:10:41 [fv_host_link_prove] engine_0: ##   0:00:00  Skipping step 87..
+SBY  2:10:41 [fv_host_link_prove] engine_0: ##   0:00:00  Skipping step 88..
+SBY  2:10:41 [fv_host_link_prove] engine_0: ##   0:00:00  Skipping step 89..
+SBY  2:10:41 [fv_host_link_prove] engine_0: ##   0:00:00  Skipping step 90..
+SBY  2:10:41 [fv_host_link_prove] engine_0: ##   0:00:00  Skipping step 91..
+SBY  2:10:41 [fv_host_link_prove] engine_0: ##   0:00:00  Skipping step 92..
+SBY  2:10:41 [fv_host_link_prove] engine_0: ##   0:00:00  Skipping step 93..
+SBY  2:10:41 [fv_host_link_prove] engine_0: ##   0:00:00  Skipping step 94..
+SBY  2:10:41 [fv_host_link_prove] engine_0: ##   0:00:00  Skipping step 95..
+SBY  2:10:41 [fv_host_link_prove] engine_0: ##   0:00:00  Skipping step 96..
+SBY  2:10:41 [fv_host_link_prove] engine_0: ##   0:00:00  Skipping step 97..
+SBY  2:10:41 [fv_host_link_prove] engine_0: ##   0:00:00  Skipping step 98..
+SBY  2:10:41 [fv_host_link_prove] engine_0: ##   0:00:00  Skipping step 99..
+SBY  2:10:41 [fv_host_link_prove] engine_0: ##   0:00:00  Skipping step 100..
+SBY  2:10:41 [fv_host_link_prove] engine_0: ##   0:00:00  Skipping step 101..
+SBY  2:10:41 [fv_host_link_prove] engine_0: ##   0:00:00  Skipping step 102..
+SBY  2:10:41 [fv_host_link_prove] engine_0: ##   0:00:00  Skipping step 103..
+SBY  2:10:41 [fv_host_link_prove] engine_0: ##   0:00:00  Skipping step 104..
+SBY  2:10:41 [fv_host_link_prove] engine_0: ##   0:00:00  Skipping step 105..
+SBY  2:10:41 [fv_host_link_prove] engine_0: ##   0:00:00  Skipping step 106..
+SBY  2:10:41 [fv_host_link_prove] engine_0: ##   0:00:00  Skipping step 107..
+SBY  2:10:41 [fv_host_link_prove] engine_0: ##   0:00:00  Skipping step 108..
+SBY  2:10:41 [fv_host_link_prove] engine_0: ##   0:00:00  Skipping step 109..
+SBY  2:10:41 [fv_host_link_prove] engine_0: ##   0:00:00  Skipping step 110..
+SBY  2:10:41 [fv_host_link_prove] engine_0: ##   0:00:00  Skipping step 111..
+SBY  2:10:41 [fv_host_link_prove] engine_0: ##   0:00:00  Skipping step 112..
+SBY  2:10:41 [fv_host_link_prove] engine_0: ##   0:00:00  Skipping step 113..
+SBY  2:10:41 [fv_host_link_prove] engine_0: ##   0:00:00  Skipping step 114..
+SBY  2:10:41 [fv_host_link_prove] engine_0: ##   0:00:00  Skipping step 115..
+SBY  2:10:41 [fv_host_link_prove] engine_0: ##   0:00:00  Skipping step 116..
+SBY  2:10:41 [fv_host_link_prove] engine_0: ##   0:00:00  Skipping step 117..
+SBY  2:10:41 [fv_host_link_prove] engine_0: ##   0:00:00  Skipping step 118..
+SBY  2:10:41 [fv_host_link_prove] engine_0: ##   0:00:00  Skipping step 119..
+SBY  2:10:41 [fv_host_link_prove] engine_0: ##   0:00:00  Skipping step 120..
+SBY  2:10:41 [fv_host_link_prove] engine_0: ##   0:00:00  Skipping step 121..
+SBY  2:10:41 [fv_host_link_prove] engine_0: ##   0:00:00  Skipping step 122..
+SBY  2:10:41 [fv_host_link_prove] engine_0: ##   0:00:00  Skipping step 123..
+SBY  2:10:41 [fv_host_link_prove] engine_0: ##   0:00:00  Skipping step 124..
+SBY  2:10:41 [fv_host_link_prove] engine_0: ##   0:00:00  Skipping step 125..
+SBY  2:10:41 [fv_host_link_prove] engine_0: ##   0:00:00  Skipping step 126..
+SBY  2:10:41 [fv_host_link_prove] engine_0: ##   0:00:00  Skipping step 127..
+SBY  2:10:41 [fv_host_link_prove] engine_0: ##   0:00:00  Skipping step 128..
+SBY  2:10:41 [fv_host_link_prove] engine_0: ##   0:00:00  Skipping step 129..
+SBY  2:10:41 [fv_host_link_prove] engine_0: ##   0:00:00  Skipping step 130..
+SBY  2:10:41 [fv_host_link_prove] engine_0: ##   0:00:00  Skipping step 131..
+SBY  2:10:41 [fv_host_link_prove] engine_0: ##   0:00:00  Skipping step 132..
+SBY  2:10:41 [fv_host_link_prove] engine_0: ##   0:00:00  Skipping step 133..
+SBY  2:10:41 [fv_host_link_prove] engine_0: ##   0:00:00  Skipping step 134..
+SBY  2:10:41 [fv_host_link_prove] engine_0: ##   0:00:00  Skipping step 135..
+SBY  2:10:41 [fv_host_link_prove] engine_0: ##   0:00:00  Skipping step 136..
+SBY  2:10:41 [fv_host_link_prove] engine_0: ##   0:00:00  Skipping step 137..
+SBY  2:10:41 [fv_host_link_prove] engine_0: ##   0:00:00  Skipping step 138..
+SBY  2:10:41 [fv_host_link_prove] engine_0: ##   0:00:00  Skipping step 139..
+SBY  2:10:41 [fv_host_link_prove] engine_0: ##   0:00:00  Skipping step 140..
+SBY  2:10:41 [fv_host_link_prove] engine_0: ##   0:00:00  Skipping step 141..
+SBY  2:10:41 [fv_host_link_prove] engine_0: ##   0:00:00  Skipping step 142..
+SBY  2:10:41 [fv_host_link_prove] engine_0: ##   0:00:00  Skipping step 143..
+SBY  2:10:41 [fv_host_link_prove] engine_0: ##   0:00:00  Skipping step 144..
+SBY  2:10:41 [fv_host_link_prove] engine_0: ##   0:00:00  Skipping step 145..
+SBY  2:10:41 [fv_host_link_prove] engine_0: ##   0:00:00  Skipping step 146..
+SBY  2:10:41 [fv_host_link_prove] engine_0: ##   0:00:00  Skipping step 147..
+SBY  2:10:41 [fv_host_link_prove] engine_0: ##   0:00:00  Skipping step 148..
+SBY  2:10:41 [fv_host_link_prove] engine_0: ##   0:00:00  Skipping step 149..
+SBY  2:10:41 [fv_host_link_prove] engine_0: ##   0:00:00  Skipping step 150..
+SBY  2:10:41 [fv_host_link_prove] engine_0: ##   0:00:00  Skipping step 151..
+SBY  2:10:41 [fv_host_link_prove] engine_0: ##   0:00:00  Skipping step 152..
+SBY  2:10:41 [fv_host_link_prove] engine_0: ##   0:00:00  Skipping step 153..
+SBY  2:10:41 [fv_host_link_prove] engine_0: ##   0:00:00  Skipping step 154..
+SBY  2:10:41 [fv_host_link_prove] engine_0: ##   0:00:00  Skipping step 155..
+SBY  2:10:41 [fv_host_link_prove] engine_0: ##   0:00:00  Skipping step 156..
+SBY  2:10:41 [fv_host_link_prove] engine_0: ##   0:00:00  Skipping step 157..
+SBY  2:10:41 [fv_host_link_prove] engine_0: ##   0:00:00  Skipping step 158..
+SBY  2:10:41 [fv_host_link_prove] engine_0: ##   0:00:00  Skipping step 159..
+SBY  2:10:41 [fv_host_link_prove] engine_0: ##   0:00:00  Skipping step 160..
+SBY  2:10:41 [fv_host_link_prove] engine_0: ##   0:00:00  Skipping step 161..
+SBY  2:10:41 [fv_host_link_prove] engine_0: ##   0:00:00  Skipping step 162..
+SBY  2:10:41 [fv_host_link_prove] engine_0: ##   0:00:00  Skipping step 163..
+SBY  2:10:41 [fv_host_link_prove] engine_0: ##   0:00:00  Skipping step 164..
+SBY  2:10:41 [fv_host_link_prove] engine_0: ##   0:00:00  Skipping step 165..
+SBY  2:10:41 [fv_host_link_prove] engine_0: ##   0:00:00  Skipping step 166..
+SBY  2:10:41 [fv_host_link_prove] engine_0: ##   0:00:00  Skipping step 167..
+SBY  2:10:41 [fv_host_link_prove] engine_0: ##   0:00:00  Skipping step 168..
+SBY  2:10:41 [fv_host_link_prove] engine_0: ##   0:00:00  Skipping step 169..
+SBY  2:10:41 [fv_host_link_prove] engine_0: ##   0:00:00  Skipping step 170..
+SBY  2:10:41 [fv_host_link_prove] engine_0: ##   0:00:00  Skipping step 171..
+SBY  2:10:41 [fv_host_link_prove] engine_0: ##   0:00:00  Skipping step 172..
+SBY  2:10:41 [fv_host_link_prove] engine_0: ##   0:00:00  Skipping step 173..
+SBY  2:10:41 [fv_host_link_prove] engine_0: ##   0:00:00  Skipping step 174..
+SBY  2:10:41 [fv_host_link_prove] engine_0: ##   0:00:00  Skipping step 175..
+SBY  2:10:41 [fv_host_link_prove] engine_0: ##   0:00:00  Skipping step 176..
+SBY  2:10:41 [fv_host_link_prove] engine_0: ##   0:00:00  Skipping step 177..
+SBY  2:10:41 [fv_host_link_prove] engine_0: ##   0:00:00  Skipping step 178..
+SBY  2:10:41 [fv_host_link_prove] engine_0: ##   0:00:00  Skipping step 179..
+SBY  2:10:41 [fv_host_link_prove] engine_0: ##   0:00:00  Skipping step 180..
+SBY  2:10:41 [fv_host_link_prove] engine_0: ##   0:00:00  Skipping step 181..
+SBY  2:10:41 [fv_host_link_prove] engine_0: ##   0:00:00  Skipping step 182..
+SBY  2:10:41 [fv_host_link_prove] engine_0: ##   0:00:00  Skipping step 183..
+SBY  2:10:41 [fv_host_link_prove] engine_0: ##   0:00:00  Skipping step 184..
+SBY  2:10:41 [fv_host_link_prove] engine_0: ##   0:00:00  Skipping step 185..
+SBY  2:10:41 [fv_host_link_prove] engine_0: ##   0:00:00  Skipping step 186..
+SBY  2:10:41 [fv_host_link_prove] engine_0: ##   0:00:00  Skipping step 187..
+SBY  2:10:41 [fv_host_link_prove] engine_0: ##   0:00:00  Skipping step 188..
+SBY  2:10:41 [fv_host_link_prove] engine_0: ##   0:00:00  Skipping step 189..
+SBY  2:10:41 [fv_host_link_prove] engine_0: ##   0:00:00  Skipping step 190..
+SBY  2:10:41 [fv_host_link_prove] engine_0: ##   0:00:00  Skipping step 191..
+SBY  2:10:41 [fv_host_link_prove] engine_0: ##   0:00:00  Skipping step 192..
+SBY  2:10:41 [fv_host_link_prove] engine_0: ##   0:00:00  Skipping step 193..
+SBY  2:10:41 [fv_host_link_prove] engine_0: ##   0:00:00  Skipping step 194..
+SBY  2:10:41 [fv_host_link_prove] engine_0: ##   0:00:00  Skipping step 195..
+SBY  2:10:41 [fv_host_link_prove] engine_0: ##   0:00:00  Skipping step 196..
+SBY  2:10:41 [fv_host_link_prove] engine_0: ##   0:00:00  Skipping step 197..
+SBY  2:10:41 [fv_host_link_prove] engine_0: ##   0:00:00  Skipping step 198..
+SBY  2:10:41 [fv_host_link_prove] engine_0: ##   0:00:00  Skipping step 199..
+SBY  2:10:41 [fv_host_link_prove] engine_0: ##   0:00:00  Skipping step 200..
+SBY  2:10:41 [fv_host_link_prove] engine_0: ##   0:00:00  Skipping step 201..
+SBY  2:10:41 [fv_host_link_prove] engine_0: ##   0:00:00  Skipping step 202..
+SBY  2:10:41 [fv_host_link_prove] engine_0: ##   0:00:00  Skipping step 203..
+SBY  2:10:41 [fv_host_link_prove] engine_0: ##   0:00:00  Skipping step 204..
+SBY  2:10:41 [fv_host_link_prove] engine_0: ##   0:00:00  Skipping step 205..
+SBY  2:10:41 [fv_host_link_prove] engine_0: ##   0:00:00  Skipping step 206..
+SBY  2:10:41 [fv_host_link_prove] engine_0: ##   0:00:00  Skipping step 207..
+SBY  2:10:41 [fv_host_link_prove] engine_0: ##   0:00:00  Skipping step 208..
+SBY  2:10:41 [fv_host_link_prove] engine_0: ##   0:00:00  Skipping step 209..
+SBY  2:10:41 [fv_host_link_prove] engine_0: ##   0:00:00  Skipping step 210..
+SBY  2:10:41 [fv_host_link_prove] engine_0: ##   0:00:00  Skipping step 211..
+SBY  2:10:41 [fv_host_link_prove] engine_0: ##   0:00:00  Skipping step 212..
+SBY  2:10:41 [fv_host_link_prove] engine_0: ##   0:00:00  Skipping step 213..
+SBY  2:10:41 [fv_host_link_prove] engine_0: ##   0:00:00  Skipping step 214..
+SBY  2:10:41 [fv_host_link_prove] engine_0: ##   0:00:00  Skipping step 215..
+SBY  2:10:41 [fv_host_link_prove] engine_0: ##   0:00:00  Skipping step 216..
+SBY  2:10:41 [fv_host_link_prove] engine_0: ##   0:00:00  Skipping step 217..
+SBY  2:10:41 [fv_host_link_prove] engine_0: ##   0:00:00  Skipping step 218..
+SBY  2:10:41 [fv_host_link_prove] engine_0: ##   0:00:00  Skipping step 219..
+SBY  2:10:41 [fv_host_link_prove] engine_0: ##   0:00:00  Skipping step 220..
+SBY  2:10:41 [fv_host_link_prove] engine_0: ##   0:00:00  Skipping step 221..
+SBY  2:10:41 [fv_host_link_prove] engine_0: ##   0:00:00  Skipping step 222..
+SBY  2:10:41 [fv_host_link_prove] engine_0: ##   0:00:00  Skipping step 223..
+SBY  2:10:41 [fv_host_link_prove] engine_0: ##   0:00:00  Skipping step 224..
+SBY  2:10:41 [fv_host_link_prove] engine_0: ##   0:00:00  Skipping step 225..
+SBY  2:10:41 [fv_host_link_prove] engine_0: ##   0:00:00  Skipping step 226..
+SBY  2:10:41 [fv_host_link_prove] engine_0: ##   0:00:00  Skipping step 227..
+SBY  2:10:41 [fv_host_link_prove] engine_0: ##   0:00:00  Skipping step 228..
+SBY  2:10:41 [fv_host_link_prove] engine_0: ##   0:00:00  Skipping step 229..
+SBY  2:10:41 [fv_host_link_prove] engine_0: ##   0:00:00  Skipping step 230..
+SBY  2:10:41 [fv_host_link_prove] engine_0: ##   0:00:00  Skipping step 231..
+SBY  2:10:41 [fv_host_link_prove] engine_0: ##   0:00:00  Skipping step 232..
+SBY  2:10:41 [fv_host_link_prove] engine_0: ##   0:00:00  Skipping step 233..
+SBY  2:10:41 [fv_host_link_prove] engine_0: ##   0:00:00  Skipping step 234..
+SBY  2:10:41 [fv_host_link_prove] engine_0: ##   0:00:00  Skipping step 235..
+SBY  2:10:41 [fv_host_link_prove] engine_0: ##   0:00:00  Skipping step 236..
+SBY  2:10:41 [fv_host_link_prove] engine_0: ##   0:00:00  Skipping step 237..
+SBY  2:10:41 [fv_host_link_prove] engine_0: ##   0:00:00  Skipping step 238..
+SBY  2:10:41 [fv_host_link_prove] engine_0: ##   0:00:00  Skipping step 239..
+SBY  2:10:41 [fv_host_link_prove] engine_0: ##   0:00:00  Skipping step 240..
+SBY  2:10:41 [fv_host_link_prove] engine_0: ##   0:00:00  Skipping step 241..
+SBY  2:10:41 [fv_host_link_prove] engine_0: ##   0:00:00  Skipping step 242..
+SBY  2:10:41 [fv_host_link_prove] engine_0: ##   0:00:00  Skipping step 243..
+SBY  2:10:41 [fv_host_link_prove] engine_0: ##   0:00:00  Skipping step 244..
+SBY  2:10:41 [fv_host_link_prove] engine_0: ##   0:00:00  Skipping step 245..
+SBY  2:10:41 [fv_host_link_prove] engine_0: ##   0:00:00  Skipping step 246..
+SBY  2:10:41 [fv_host_link_prove] engine_0: ##   0:00:00  Skipping step 247..
+SBY  2:10:41 [fv_host_link_prove] engine_0: ##   0:00:00  Skipping step 248..
+SBY  2:10:41 [fv_host_link_prove] engine_0: ##   0:00:00  Skipping step 249..
+SBY  2:10:41 [fv_host_link_prove] engine_0: ##   0:00:00  Skipping step 250..
+SBY  2:10:41 [fv_host_link_prove] engine_0: ##   0:00:00  Skipping step 251..
+SBY  2:10:41 [fv_host_link_prove] engine_0: ##   0:00:00  Skipping step 252..
+SBY  2:10:41 [fv_host_link_prove] engine_0: ##   0:00:00  Skipping step 253..
+SBY  2:10:41 [fv_host_link_prove] engine_0: ##   0:00:00  Skipping step 254..
+SBY  2:10:41 [fv_host_link_prove] engine_0: ##   0:00:00  Skipping step 255..
+SBY  2:10:41 [fv_host_link_prove] engine_0: ##   0:00:00  Skipping step 256..
+SBY  2:10:41 [fv_host_link_prove] engine_0: ##   0:00:00  Skipping step 257..
+SBY  2:10:41 [fv_host_link_prove] engine_0: ##   0:00:00  Skipping step 258..
+SBY  2:10:41 [fv_host_link_prove] engine_0: ##   0:00:00  Skipping step 259..
+SBY  2:10:41 [fv_host_link_prove] engine_0: ##   0:00:00  Skipping step 260..
+SBY  2:10:41 [fv_host_link_prove] engine_0: ##   0:00:00  Skipping step 261..
+SBY  2:10:41 [fv_host_link_prove] engine_0: ##   0:00:00  Skipping step 262..
+SBY  2:10:41 [fv_host_link_prove] engine_0: ##   0:00:00  Skipping step 263..
+SBY  2:10:41 [fv_host_link_prove] engine_0: ##   0:00:00  Skipping step 264..
+SBY  2:10:41 [fv_host_link_prove] engine_0: ##   0:00:00  Skipping step 265..
+SBY  2:10:41 [fv_host_link_prove] engine_0: ##   0:00:00  Skipping step 266..
+SBY  2:10:41 [fv_host_link_prove] engine_0: ##   0:00:00  Skipping step 267..
+SBY  2:10:41 [fv_host_link_prove] engine_0: ##   0:00:00  Skipping step 268..
+SBY  2:10:41 [fv_host_link_prove] engine_0: ##   0:00:00  Skipping step 269..
+SBY  2:10:41 [fv_host_link_prove] engine_0: ##   0:00:00  Skipping step 270..
+SBY  2:10:41 [fv_host_link_prove] engine_0: ##   0:00:00  Checking assertions in step 271..
+SBY  2:10:41 [fv_host_link_prove] engine_0: ##   0:00:00  BMC failed!
+SBY  2:10:41 [fv_host_link_prove] engine_0: ##   0:00:00  Assert failed in host_link: u_fv_host_link.u_fv_host_link_host_if.ast_1111_miso_change_at_e3_after_fall
+SBY  2:10:41 [fv_host_link_prove] engine_0: ##   0:00:00  Writing trace to VCD file: engine_0/trace_14.vcd
+SBY  2:10:42 [fv_host_link_prove] engine_0: Timing out on output 12 in frame 209 (retrying in next anytime pass).
+SBY  2:10:42 [fv_host_link_prove] engine_0: ##   0:00:01  Writing trace to Verilog testbench: engine_0/trace_14_tb.v
+SBY  2:10:42 [fv_host_link_prove] engine_0: ##   0:00:01  Writing trace to constraints file: engine_0/trace_14.smtc
+SBY  2:10:42 [fv_host_link_prove] engine_0: ##   0:00:01  Writing trace to Yosys witness file: engine_0/trace_14.yw
+SBY  2:10:43 [fv_host_link_prove] engine_0: ##   0:00:01  Status: FAILED
