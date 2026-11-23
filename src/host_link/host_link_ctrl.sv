@@ -15,7 +15,7 @@
 //        IDLE --set_rd--> WAIT_R --rready--> RDATA (rpend) --> IDLE
 //
 // Produces every enable for the datapath; holds no data.
-// Flops: 9 (ph 2, bc 4, rw 1, req 1, rpend 1).
+// Flops: 10 (ph 2, bc 4, rw 1, req 1, rpend 1, miso_en_q 1).
 // -----------------------------------------------------------------------------
 
 module host_link_ctrl (
@@ -52,6 +52,7 @@ module host_link_ctrl (
   logic       rw;     // R/W bit of the current command
   logic       req;    // bus request
   logic       rpend;  // read data due this clock
+  logic       miso_en_q; // MISO window, updated on SCK falls only (KAN-24)
 
   // ---------------------------------------------------------------------------
   // A. Frame FSM
@@ -91,22 +92,28 @@ module host_link_ctrl (
   wire req_d   = set_rd | set_wr | (req & ~acc);
   wire rpend_d = req & rw & rready_i;
 
+  // MISO window: follows (rw & ph_data) only on an SCK fall, so MISO changes
+  // at E3 after a fall (mode 0), never on a rise. CS_n high clears it at once.
+  wire miso_en_d = sel ? (fall_en ? (rw & ph_data) : miso_en_q) : 1'b0;
+
   // ---------------------------------------------------------------------------
   // Registers: all reset to 0 (D-HL-8)
   // ---------------------------------------------------------------------------
   always_ff @(posedge clk or negedge rst_n) begin
     if (!rst_n) begin
-      ph    <= PH_ADDR;
-      bc    <= 4'd0;
-      rw    <= 1'b0;
-      req   <= 1'b0;
-      rpend <= 1'b0;
+      ph        <= PH_ADDR;
+      bc        <= 4'd0;
+      rw        <= 1'b0;
+      req       <= 1'b0;
+      rpend     <= 1'b0;
+      miso_en_q <= 1'b0;
     end else begin
-      ph    <= ph_d;
-      bc    <= bc_d;
-      rw    <= rw_d;
-      req   <= req_d;
-      rpend <= rpend_d;
+      ph        <= ph_d;
+      bc        <= bc_d;
+      rw        <= rw_d;
+      req       <= req_d;
+      rpend     <= rpend_d;
+      miso_en_q <= miso_en_d;
     end
   end
 
@@ -120,6 +127,6 @@ module host_link_ctrl (
   // bnz blocks the shift on the first DATA fall, so R[7] stays on MISO for bit 25
   assign sr_shift_o = (rise_en & ph_data & ~rw) | (fall_en & ph_data & rw & bnz);
   assign sr_load_o  = rpend;
-  assign miso_en_o  = rw & ph_data;
+  assign miso_en_o  = miso_en_q;
 
 endmodule

@@ -26,11 +26,11 @@
 //     and must not depend combinationally on wdata.
 //   - An unmapped address answers ready = 1 and rdata = 0.
 //
-// Structure (48 flops total, all async reset to 0):
+// Structure (49 flops total, all async reset to 0):
 //
 //   spi ──> host_link_sync (7) ──sel/rise_en/fall_en/mosi_s──┐
 //                                                               v
-//                         host_link_ctrl (9)  <── wready/rready
+//                         host_link_ctrl (10) <── wready/rready
 //                           │ a_sh, sr_shift, sr_load, miso_en  ──> req, dir
 //                           v
 //   miso <── host_link_dp (32) <──> addr, wdata, rdata
