@@ -1,0 +1,37 @@
+[*] GTKWave save file for issues/miso_changes_before_sck_fall
+[*] Open from this folder:  gtkwave trace.vcd ast_1111.gtkw
+[dumpfile] "trace.vcd"
+[savefile] "ast_1111.gtkw"
+[timestart] 2580
+[size] 1600 900
+[pos] -1 -1
+*-4.000000 2700 2620 2670 2690 2700
+@200
+-SPI pins
+@28
+host_link.rst_n
+host_link.spi_csn_i
+host_link.spi_sck_i
+host_link.spi_mosi_i
+host_link.spi_miso_o
+@200
+-SCK sync and edge enables
+@28
+host_link.u_sync.sck_s2
+host_link.rise_en
+host_link.fall_en
+@200
+-Control and datapath
+@24
+host_link.u_ctrl.bc
+host_link.u_ctrl.ph
+@28
+host_link.miso_en
+@22
+host_link.u_dp.sr
+@200
+-Property view
+@24
+host_link.u_fv_host_link.u_fv_host_link_host_if.fv_bit_cnt
+@28
+host_link.u_fv_host_link.u_fv_host_link_host_if.fv_sck_fall

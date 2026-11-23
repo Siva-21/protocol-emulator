@@ -49,7 +49,7 @@ test/                                 top-level cocotb test (TT template: tb.v, 
 verification/
   docker/                             pe-verif Dockerfile, pe-shell.sh, pe-desktop.sh
   tb/<block>/                         block cocotb test (Makefile, test_<block>.py) and plain SV benches
-  formal/<block>/                     <block>.sby, <block>_props.sv
+  formal/fv_<block>/                  src/ (<block>.sby, <block>_props.sv), run/, issues/, testplan/
   probes/tt_um_<block>_probe.v        TT wrapper to harden one block on its own
   regress/                            regression runner (to come)
 scripts/                              check_rtl_frontend.sh, lint_rtl.sh, block_area.sh, harden_local.sh
@@ -168,11 +168,14 @@ verilator --lint-only -Wall --top-module <block> $(sed 's/#.*//' src/<block>/<bl
 
 Example below for a block with ports `clk`, `rst_n`, `en`, `count`, `wrap`.
 
-1. Create the folder:
+1. Create the folder (layout: [verification/formal/README.md](../verification/formal/README.md);
+   example: `verification/formal/fv_host_link/`). The older `formal/<block>/`
+   layout is superseded for new blocks.
    ```bash
-   mkdir -p verification/formal/<block>
+   mkdir -p verification/formal/fv_<block>/{src,run,issues,testplan}
    ```
-2. Properties in `verification/formal/<block>/<block>_props.sv`: a module whose
+   Plan the properties first in `testplan/<block>_fv_testplan.md`.
+2. Properties in `verification/formal/fv_<block>/src/<block>_props.sv`: a module whose
    inputs are the block's ports (and parameters), plus a `bind` that attaches it to
    every instance of `<block>`. The RTL in `src/` stays free of formal code.
    ```systemverilog
@@ -194,7 +197,7 @@ Example below for a block with ports `clk`, `rst_n`, `en`, `count`, `wrap`.
 
    bind <block> <block>_props #(.MAX(MAX)) u_props (.*);
    ```
-3. Job file `verification/formal/<block>/<block>.sby`: RTL and properties are read
+3. Job file `verification/formal/fv_<block>/src/<block>.sby`: RTL and properties are read
    with `read_slang` (SystemVerilog, supports `bind`); one task each for bounded
    check, unbounded proof and cover:
    ```ini
@@ -220,19 +223,21 @@ Example below for a block with ports `clk`, `rst_n`, `en`, `count`, `wrap`.
    prep -top <block>
 
    [files]
-   # relative to this folder: the files from src/<block>/<block>.f, then the properties
-   ../../../src/<block>/<block>.v
-   <block>_props.sv
+   # relative to run/: the files from src/<block>/<block>.f, then the properties
+   ../../../../src/<block>/<block>.v
+   ../src/<block>_props.sv
    ```
-4. Run **from the block's formal folder** (sby resolves `[files]` against the
-   current directory and writes its work folders next to the `.sby`):
+4. Run **from the block's `run/` folder** with `--prefix` (sby resolves `[files]`
+   against the current directory; without `--prefix` it would create its work
+   folders next to the `.sby`, in `src/`):
    ```bash
-   cd verification/formal/<block>
-   sby -f <block>.sby            # all tasks
-   sby -f <block>.sby prove      # one task
+   cd verification/formal/fv_<block>/run
+   sby -f --prefix <block> ../src/<block>.sby            # all tasks
+   sby -f --prefix <block> ../src/<block>.sby prove      # one task
    cd -
    ```
-   (`-f` replaces the work folders of a previous run.)
+   (`-f` replaces the work folders of a previous run.) `run/run.sh [task]` wraps
+   the same command and tees a log.
 
    **Task prefixes:** in a `.sby` file a line prefix selects tasks only if it is
    **one** task name at the very start of the line: `bmc:` or `~bmc:` (every task
@@ -250,11 +255,17 @@ Example below for a block with ports `clk`, `rst_n`, `en`, `count`, `wrap`.
    good:    read_slang <block>.v <block>_props.sv --top <block>
    bug_bmc: read_slang -DBUG <block>.v <block>_props.sv --top <block>
    ```
-5. Results, in `verification/formal/<block>/<block>_<task>/`:
+5. Results, in `verification/formal/fv_<block>/run/<block>_<task>/` (all of
+   `run/` except `run.sh` is git-ignored; sby's status database is
+   `run/<block>/status.sqlite`):
    - `status`: `PASS` / `FAIL` (exit code 0 / 2), `logfile.txt`: full log;
    - failing assertion: `engine_0/trace.vcd` (counterexample; the log names the
      assertion, file:line and step);
    - cover: `engine_0/trace0.vcd`, `trace1.vcd`, ... one per reached cover statement.
+6. A failing property: copy its trace to `issues/<PROP_ID>_<yyyymmdd>/trace.vcd`
+   with a `.gtkw` save file and `notes.md` (property, task/step, root cause, RTL vs
+   property vs spec fault, resolution or GitHub issue). That folder is tracked,
+   waveforms included.
 
 ## Formal trace debug
 
@@ -270,24 +281,25 @@ Example below for a block with ports `clk`, `rst_n`, `en`, `count`, `wrap`.
    keeps its folder, so the step below changes folder explicitly.)
 2. Open the trace (failing assertion or cover):
    ```bash
-   cd /foss/designs/protocol-emulator/verification/formal/<block>
+   cd /foss/designs/protocol-emulator/verification/formal/fv_<block>/run
    gtkwave <block>_bmc/engine_0/trace.vcd &       # counterexample
    surfer  <block>_cover/engine_0/trace0.vcd &    # cover trace
    ```
 3. In GTKWave: expand the hierarchy (`<block>` → `u_props`), add signals; the
    failing step is the last one in the trace. *File → Write Save File* stores the
-   signal setup as `*.gtkw` (tracked by git, if you want to keep it).
+   signal setup as `*.gtkw`; to keep a failure, save it with the trace in
+   `../issues/<PROP_ID>_<yyyymmdd>/` (tracked; `run/` is not).
 4. Read the source next to the waveform: the log names the failing assertion as
    `file:line` (e.g. `<block>_props.sv:32`); open the properties and the RTL in an
    editor in the desktop (`gedit`, `gvim`; `vim`/`nano` in the terminal):
    ```bash
-   gedit <block>_props.sv ../../../src/<block>/<block>.v &
+   gedit ../src/<block>_props.sv ../../../../src/<block>/<block>.v &
    ```
    Editing works on the host too: `/foss/designs` is your `$DESIGNS` folder.
 5. Stop the desktop when done: `verification/docker/pe-desktop.sh stop`.
 
 **On the host instead:** the traces are ordinary files below
-`~/edatools/designs/protocol-emulator/verification/formal/<block>/`. Open them with a
+`~/edatools/designs/protocol-emulator/verification/formal/fv_<block>/run/`. Open them with a
 GTKWave or Surfer installed on the host, or drag them into the Surfer web app
 (<https://app.surfer-project.org>, the file is read locally in the browser).
 
