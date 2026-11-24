@@ -109,16 +109,16 @@ module fv_host_link_e2e (
     if (fv_rd_accept_q) fv_rbit <= fv_rdata_in_spi[fv_idx];
   end
 
-  // For the covers: clocks the current read request has waited (saturates at 8), and
-  // whether the read of this frame was accepted only after the full 8-clock wait
+  // For the covers: clocks the current read request has waited (saturates at 10), and
+  // whether the read of this frame was accepted only after the full 10-clock wait
   logic [3:0] fv_rd_wait;
   logic       fv_rd_max_wait;
   always_ff @(posedge clk) begin
     if (!rst_n || !(bus_req_o && !bus_dir_o && !bus_rready_i)) fv_rd_wait <= '0;
-    else if (fv_rd_wait < 4'd8) fv_rd_wait <= fv_rd_wait + 4'd1;
+    else if (fv_rd_wait < 4'd10) fv_rd_wait <= fv_rd_wait + 4'd1;
 
     if (!rst_n || fv_rd_rise17) fv_rd_max_wait <= 1'b0;
-    else if (fv_bus_accept && !bus_dir_o && fv_rd_wait == 4'd8) fv_rd_max_wait <= 1'b1;
+    else if (fv_bus_accept && !bus_dir_o && fv_rd_wait == 4'd10) fv_rd_max_wait <= 1'b1;
   end
 
   // ---------------------------------------------------------------------------
@@ -216,7 +216,7 @@ module fv_host_link_e2e (
   );
 
   // 1110 is checked on the first read-data bit (bit 25, R[7] = 1) of a read that
-  // was accepted only after the full 8-clock wait (Impl spec §3, T2, BUS-02, D-HL-4, V4)
+  // was accepted only after the full 10-clock wait (Impl spec §3, T2, BUS-02, D-HL-4, V4)
   cov_1110_first_bit_after_max_wait: cover property(
     @(posedge clk) disable iff (!rst_n)
       fv_rd_max_wait && fv_frame_rise && fv_frame_read && fv_bit_cnt == 6'd24 && fv_idx == 4'd15 && fv_rbit

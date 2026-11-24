@@ -11,9 +11,11 @@ frame into one 16-bit bus access as master 0). Spec:
 - prove (abc pdr): all 24 asserts proved unbounded. 1111 failed on RTL `e811967`
   (MISO changes at the read-window opening) and is fixed in KAN-24, see
   [issues/miso_changes_before_sck_fall/](issues/miso_changes_before_sck_fall/).
-- cover (smtbmc, depth 600): all 15 covers reached (steps 7 to 569).
+- cover (smtbmc, depth 650): all 15 covers reached (steps 7 to 585).
 - The over-constraints 1221/1222 (ready only on a request) are removed; the results
   above are without them.
+- The results use the KAN-27 host rule (1103: CS_n high for at least 20 clocks after a
+  full frame) and ready within 10 clocks (1201/1202: CRC busy, 8 bits + 2 stuff bits).
 
 ## Layout
 
