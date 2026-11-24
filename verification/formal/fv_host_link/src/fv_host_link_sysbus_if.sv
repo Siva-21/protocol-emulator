@@ -62,20 +62,6 @@ module fv_host_link_sysbus_if (
       (bus_req_o && !bus_dir_o && fv_rd_wait >= 4'd8) -> bus_rready_i
   );
 
-  // Over-constraint: wready only while a write is requested; the spec allows it with
-  // no request. Check as an assert on the bus target side, remove if it fails there (Sysbus spec bus protocol)
-  asm_1221_wready_only_on_wr_req_oc: assume property(
-    @(posedge clk) disable iff (!rst_n)
-      !(bus_req_o && bus_dir_o) -> !bus_wready_i
-  );
-
-  // Over-constraint: rready only while a read is requested; the spec allows it with
-  // no request. Check as an assert on the bus target side, remove if it fails there (Sysbus spec bus protocol)
-  asm_1222_rready_only_on_rd_req_oc: assume property(
-    @(posedge clk) disable iff (!rst_n)
-      !(bus_req_o && !bus_dir_o) -> !bus_rready_i
-  );
-
   // 1203: bus_rdata_i is free in every clock. No constraint is needed; the read
   // data R is sampled in the clock after the accept in fv_host_link_e2e.sv.
 
