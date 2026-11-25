@@ -4,16 +4,18 @@ Formal (SymbiYosys) proofs for `src/host_link/` (SPI target that turns one 40-bi
 frame into one 16-bit bus access as master 0). Spec:
 `docs/Implementation_spec/Host_link_implementation_spec.pdf` (frozen 7 Nov 2026).
 
-**Status (2026-11-22, RTL `e811967`):** properties coded from the approved testplan
+**Status (2026-11-24, RTL `f71c1c8`):** properties coded from the approved testplan
 ([testplan/host_link_fv_testplan.md](testplan/host_link_fv_testplan.md)): 24 asserts,
-13 assumes, 15 covers.
+11 assumes, 15 covers.
 
-- prove (abc pdr): 23 of 24 asserts proved unbounded; 1111 fails (MISO changes at
-  the read-window opening, tracked in JIRA, see
-  [issues/miso_changes_before_sck_fall/](issues/miso_changes_before_sck_fall/)).
-- cover (smtbmc, depth 600): all 15 covers reached (steps 7 to 569).
-- 1221/1222 are over-constraints (`_oc`), to be checked as asserts on the bus
-  target side.
+- prove (abc pdr): all 24 asserts proved unbounded. 1111 failed on RTL `e811967`
+  (MISO changes at the read-window opening) and is fixed in KAN-24, see
+  [issues/miso_changes_before_sck_fall/](issues/miso_changes_before_sck_fall/).
+- cover (smtbmc, depth 650): all 15 covers reached (steps 7 to 585).
+- The over-constraints 1221/1222 (ready only on a request) are removed; the results
+  above are without them.
+- The results use the KAN-27 host rule (1103: CS_n high for at least 20 clocks after a
+  full frame) and ready within 10 clocks (1201/1202: CRC busy, 8 bits + 2 stuff bits).
 
 ## Layout
 

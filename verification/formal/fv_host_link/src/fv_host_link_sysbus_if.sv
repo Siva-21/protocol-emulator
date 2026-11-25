@@ -25,14 +25,14 @@ module fv_host_link_sysbus_if (
   assign fv_bus_accept = bus_req_o && (bus_dir_o ? bus_wready_i : bus_rready_i);
   assign fv_bus_stall  = bus_req_o && !fv_bus_accept;
 
-  // Wait counters: consecutive clocks a write / read request waited (saturate at 8)
+  // Wait counters: consecutive clocks a write / read request waited (saturate at 10)
   logic [3:0] fv_wr_wait, fv_rd_wait;
   always_ff @(posedge clk) begin
     if (!rst_n || !(bus_req_o && bus_dir_o && !bus_wready_i)) fv_wr_wait <= '0;
-    else if (fv_wr_wait < 4'd8) fv_wr_wait <= fv_wr_wait + 4'd1;
+    else if (fv_wr_wait < 4'd10) fv_wr_wait <= fv_wr_wait + 4'd1;
 
     if (!rst_n || !(bus_req_o && !bus_dir_o && !bus_rready_i)) fv_rd_wait <= '0;
-    else if (fv_rd_wait < 4'd8) fv_rd_wait <= fv_rd_wait + 4'd1;
+    else if (fv_rd_wait < 4'd10) fv_rd_wait <= fv_rd_wait + 4'd1;
   end
 
   // Set once an access has been accepted (for the second-access cover)
@@ -50,30 +50,16 @@ module fv_host_link_sysbus_if (
   // bus_wready_i, bus_rready_i, bus_rdata_i
   // ---------------------------------------------------------------------------
 
-  // A write waits at most 8 clocks (CRC busy) (Sysbus spec bus protocol, BUS-02, BUS-06, D-HL-4, V4)
-  asm_1201_wready_within_8_clks: assume property(
+  // A write waits at most 10 clocks (CRC busy: 8 bits + 2 stuff bits) (Sysbus spec bus protocol, B-3, BUS-02, BUS-06, D-HL-4, V4)
+  asm_1201_wready_within_10_clks: assume property(
     @(posedge clk) disable iff (!rst_n)
-      (bus_req_o && bus_dir_o && fv_wr_wait >= 4'd8) -> bus_wready_i
+      (bus_req_o && bus_dir_o && fv_wr_wait >= 4'd10) -> bus_wready_i
   );
 
-  // A read waits at most 8 clocks (CRC busy) (Sysbus spec bus protocol, BUS-02, BUS-06, D-HL-4, V4)
-  asm_1202_rready_within_8_clks: assume property(
+  // A read waits at most 10 clocks (CRC busy: 8 bits + 2 stuff bits) (Sysbus spec bus protocol, B-3, BUS-02, BUS-06, D-HL-4, V4)
+  asm_1202_rready_within_10_clks: assume property(
     @(posedge clk) disable iff (!rst_n)
-      (bus_req_o && !bus_dir_o && fv_rd_wait >= 4'd8) -> bus_rready_i
-  );
-
-  // Over-constraint: wready only while a write is requested; the spec allows it with
-  // no request. Check as an assert on the bus target side, remove if it fails there (Sysbus spec bus protocol)
-  asm_1221_wready_only_on_wr_req_oc: assume property(
-    @(posedge clk) disable iff (!rst_n)
-      !(bus_req_o && bus_dir_o) -> !bus_wready_i
-  );
-
-  // Over-constraint: rready only while a read is requested; the spec allows it with
-  // no request. Check as an assert on the bus target side, remove if it fails there (Sysbus spec bus protocol)
-  asm_1222_rready_only_on_rd_req_oc: assume property(
-    @(posedge clk) disable iff (!rst_n)
-      !(bus_req_o && !bus_dir_o) -> !bus_rready_i
+      (bus_req_o && !bus_dir_o && fv_rd_wait >= 4'd10) -> bus_rready_i
   );
 
   // 1203: bus_rdata_i is free in every clock. No constraint is needed; the read
@@ -165,16 +151,16 @@ module fv_host_link_sysbus_if (
       bus_req_o && bus_dir_o && bus_wready_i
   );
 
-  // A read waits the full 8 clocks (BUS-02, D-HL-4, V4)
-  cov_1202_rd_wait_8_clks: cover property(
+  // A read waits the full 10 clocks (Sysbus spec B-3, BUS-02, D-HL-4, V4)
+  cov_1202_rd_wait_10_clks: cover property(
     @(posedge clk) disable iff (!rst_n)
-      fv_rd_wait == 4'd8
+      fv_rd_wait == 4'd10
   );
 
-  // A write waits the full 8 clocks (BUS-02, D-HL-4, V4)
-  cov_1201_wr_wait_8_clks: cover property(
+  // A write waits the full 10 clocks (Sysbus spec B-3, BUS-02, D-HL-4, V4)
+  cov_1201_wr_wait_10_clks: cover property(
     @(posedge clk) disable iff (!rst_n)
-      fv_wr_wait == 4'd8
+      fv_wr_wait == 4'd10
   );
 
   // A second access is accepted after the first one (A-CHG-2, HL-04, BUS-05)

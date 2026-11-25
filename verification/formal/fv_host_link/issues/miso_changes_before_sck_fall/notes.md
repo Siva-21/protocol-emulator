@@ -15,8 +15,8 @@ E3 after an SCK fall.
 | Property | 1111, `ast_1111_miso_change_at_e3_after_fall` in `src/fv_host_link_host_if.sv`: `(!spi_csn_i && $changed(spi_miso_o)) -> $past(fv_sck_fall, 3)` |
 | sby task / step | `prove`, abc `pdr --keep-going`, output 14, CEX in frame 200, replay fails at step 271 (VCD time 2700 is the change). Run of 2026-11-22, with the 1101/1103/1104/1107 rewrites and the 1221/1222 over-constraints. Same case as the first failure (run of 2026-11-20, frame 145, change at step 267). RTL at commit `e811967` |
 | Root cause | see below |
-| Fault | spec / RTL mismatch (open). No functional impact on a mode 0 host |
-| Resolution | open, tracked in JIRA: spec clarification (relax 1111 for the window-opening change) or RTL change (`miso_en` at the first DATA fall) |
+| Fault | spec / RTL mismatch (fixed). No functional impact on a mode 0 host |
+| Resolution | fixed in KAN-24 (PR #7, RTL `f71c1c8`): `miso_en` is registered and updated only on SCK falls. 1111 proved, run of 2026-11-24 |
 
 ## Root cause
 

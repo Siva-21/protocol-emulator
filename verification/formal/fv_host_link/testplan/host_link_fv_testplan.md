@@ -47,7 +47,7 @@
   only, from the specs (frame format, port timing, timing figures T1–T5, host
   rules, bus protocol, V1–V9); no internal signals, no implementation equations.
 - **Assume–guarantee:** properties on inputs are assumptions that model a legal
-  SPI host (H-1..H-4) and a legal system bus (BUS-02/BUS-03, waits of 0–8
+  SPI host (H-1..H-4) and a legal system bus (BUS-02/BUS-03, waits of 0–10
   clocks); properties on outputs are assertions checked under them.
 - **Interface checks:** reset values, the req/dir/addr/wdata handshake and its
   stability, and the T3/T4/T5 clock counts are checked directly on the ports.
@@ -88,7 +88,7 @@
 <td>1102</td><td>Assume: spi_sck_i = 0 while rst_n = 0 and while spi_csn_i = 1 (mode 0 idle level, also at reset release).</td><td>None</td><td>H-1, HL-01, Impl spec §7 reset</td><td></td><td></td>
 </tr>
 <tr>
-<td>1103</td><td>Assume: at least 10 clocks (one SCK period at clk/10) from the last SCK rise of a frame to the first SCK rise of the next frame.</td><td>SPI host frame model + SCK edge timer (clocks since last frame rise)</td><td>H-2, V6</td><td></td><td></td>
+<td>1103</td><td>Assume: after a frame with 40 SCK rises, spi_csn_i stays 1 for at least 20 clocks (two SCK periods at clk/10) before the next frame. No minimum after an aborted frame (no access pending).</td><td>SPI host frame model + CS_n high counter</td><td>KAN-27 (replaces the H-2 minimum), V6</td><td></td><td></td>
 </tr>
 <tr>
 <td rowspan="3">4</td><td rowspan="3"><code>spi_csn_i</code></td><td rowspan="3">Host</td><td rowspan="3">Input</td><td rowspan="3">Host to Host link</td>
@@ -115,26 +115,20 @@
 <td>1109</td><td>Assert: spi_miso_o = 0 outside the read-data window of a read frame: during write frames, frame bits 1–24, after bit 40, while CS_n is high and when idle.</td><td>SPI host frame model + MISO checker (read-data window)</td><td>Impl spec §3, HL-08, V8</td><td></td><td></td>
 </tr>
 <tr>
-<td>1110</td><td>Assert: MISO read-data integrity must be checked (at the SCK rises of bits 25–40, MISO = R[7]..R[0], R[15]..R[8], with R the bus read data of that frame's read, including with 0–8 wait clocks).</td><td>SPI host frame model + bus target scoreboard with a symbolic bit index (one bit of R, any of the 16) + MISO checker</td><td>Impl spec §3, T1, T2, HL-05, D-HL-5, V2, V4</td><td></td><td></td>
+<td>1110</td><td>Assert: MISO read-data integrity must be checked (at the SCK rises of bits 25–40, MISO = R[7]..R[0], R[15]..R[8], with R the bus read data of that frame's read, including with 0–10 wait clocks).</td><td>SPI host frame model + bus target scoreboard with a symbolic bit index (one bit of R, any of the 16) + MISO checker</td><td>Impl spec §3, T1, T2, HL-05, D-HL-5, V2, V4</td><td></td><td></td>
 </tr>
 <tr>
 <td>1111</td><td>Assert: MISO bit timing must be checked (inside the read-data window, spi_miso_o changes only at E3 after an SCK fall and holds until E3 after the next fall).</td><td>SCK edge timer + MISO checker</td><td>Impl spec §3 port table, T5</td><td></td><td></td>
 </tr>
 <tr>
-<td rowspan="2">7</td><td rowspan="2"><code>bus_wready_i</code></td><td rowspan="2">System bus</td><td rowspan="2">Input</td><td rowspan="2">System bus to Host link</td>
-<td rowspan="2">1 bit, active high. Write accepted in this clock when bus_req_o = 1 and bus_dir_o = 1; the write takes effect at the edge ending that clock. Combinational from the interconnect in the same clock (from the address and CRC busy); may be 1 with no request. Low while the target waits (CRC busy, ≤ 8 clocks).</td>
-<td>1201</td><td>Assume: while bus_req_o = 1 and bus_dir_o = 1, bus_wready_i is 1 within 8 clocks (at most 8 consecutive clocks with bus_wready_i = 0).</td><td>Wait counter</td><td>Sysbus spec bus protocol, BUS-02, BUS-06, D-HL-4, V4</td><td></td><td></td>
+<td>7</td><td><code>bus_wready_i</code></td><td>System bus</td><td>Input</td><td>System bus to Host link</td>
+<td>1 bit, active high. Write accepted in this clock when bus_req_o = 1 and bus_dir_o = 1; the write takes effect at the edge ending that clock. Combinational from the interconnect in the same clock (from the address and CRC busy); may be 1 with no request. Low while the target waits (CRC busy, ≤ 10 clocks).</td>
+<td>1201</td><td>Assume: while bus_req_o = 1 and bus_dir_o = 1, bus_wready_i is 1 within 10 clocks (CRC busy: 8 bits + 2 stuff bits; at most 10 consecutive clocks with bus_wready_i = 0).</td><td>Wait counter</td><td>Sysbus spec bus protocol, B-3, BUS-02, BUS-06, D-HL-4, V4</td><td></td><td></td>
 </tr>
 <tr>
-<td>1221</td><td>Assume: bus_wready_i = 0 when there is no write request (bus_req_o = 0 or bus_dir_o = 0).</td><td>None</td><td>Impl spec §3 port table, Sysbus spec bus protocol</td><td></td><td>Over-constraint: stricter than the spec, where bus_wready_i may be 1 with no request. Check as an assertion on the bus target side; remove from this environment if it fails there.</td>
-</tr>
-<tr>
-<td rowspan="2">8</td><td rowspan="2"><code>bus_rready_i</code></td><td rowspan="2">System bus</td><td rowspan="2">Input</td><td rowspan="2">System bus to Host link</td>
-<td rowspan="2">1 bit, active high. Read accepted in this clock when bus_req_o = 1 and bus_dir_o = 0; the side effect (e.g. FIFO B pop) happens at the edge ending that clock. Combinational from the interconnect in the same clock; may be 1 with no request. Low while the target waits (CRC busy, ≤ 8 clocks).</td>
-<td>1202</td><td>Assume: while bus_req_o = 1 and bus_dir_o = 0, bus_rready_i is 1 within 8 clocks (at most 8 consecutive clocks with bus_rready_i = 0).</td><td>Wait counter</td><td>Sysbus spec bus protocol, BUS-02, BUS-06, D-HL-4, V4</td><td></td><td></td>
-</tr>
-<tr>
-<td>1222</td><td>Assume: bus_rready_i = 0 when there is no read request (bus_req_o = 0 or bus_dir_o = 1).</td><td>None</td><td>Impl spec §3 port table, Sysbus spec bus protocol</td><td></td><td>Over-constraint: stricter than the spec, where bus_rready_i may be 1 with no request. Check as an assertion on the bus target side; remove from this environment if it fails there.</td>
+<td>8</td><td><code>bus_rready_i</code></td><td>System bus</td><td>Input</td><td>System bus to Host link</td>
+<td>1 bit, active high. Read accepted in this clock when bus_req_o = 1 and bus_dir_o = 0; the side effect (e.g. FIFO B pop) happens at the edge ending that clock. Combinational from the interconnect in the same clock; may be 1 with no request. Low while the target waits (CRC busy, ≤ 10 clocks).</td>
+<td>1202</td><td>Assume: while bus_req_o = 1 and bus_dir_o = 0, bus_rready_i is 1 within 10 clocks (CRC busy: 8 bits + 2 stuff bits; at most 10 consecutive clocks with bus_rready_i = 0).</td><td>Wait counter</td><td>Sysbus spec bus protocol, B-3, BUS-02, BUS-06, D-HL-4, V4</td><td></td><td></td>
 </tr>
 <tr>
 <td>9</td><td><code>bus_rdata_i</code></td><td>System bus</td><td>Input</td><td>System bus to Host link</td>

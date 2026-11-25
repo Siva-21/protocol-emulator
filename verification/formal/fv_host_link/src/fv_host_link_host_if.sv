@@ -31,13 +31,6 @@ module fv_host_link_host_if (
     if (spi_sck_i != fv_sck_q) fv_sck_level_len <= 3'd1;
     else if (fv_sck_level_len < 3'd5) fv_sck_level_len <= fv_sck_level_len + 3'd1;
 
-  // SCK edge timer: clocks since the last SCK rise (saturates at 10, set to 10 by reset)
-  logic [3:0] fv_clks_since_rise = 4'd10;
-  always_ff @(posedge clk)
-    if (!rst_n) fv_clks_since_rise <= 4'd10;
-    else if (fv_sck_rise) fv_clks_since_rise <= 4'd1;
-    else if (fv_clks_since_rise < 4'd10) fv_clks_since_rise <= fv_clks_since_rise + 4'd1;
-
   // MOSI stability counter: clocks MOSI has kept its value (saturates at 5)
   logic       fv_mosi_q = 1'b0;
   logic [2:0] fv_mosi_level_len = '0;
@@ -57,6 +50,18 @@ module fv_host_link_host_if (
       fv_bit_cnt <= fv_bit_cnt + 6'd1;
       if (fv_bit_cnt == 6'd16) fv_rd_frame <= spi_mosi_i;
     end
+
+  // Frame gap: clocks CS_n has been high (saturates at 20); fv_gap_owed is set by a
+  // full 40-bit frame and cleared once CS_n has been high for 20 clocks
+  logic [4:0] fv_csn_high_len;
+  logic       fv_gap_owed;
+  always_ff @(posedge clk) begin
+    if (!rst_n || !spi_csn_i) fv_csn_high_len <= '0;
+    else if (fv_csn_high_len < 5'd20) fv_csn_high_len <= fv_csn_high_len + 5'd1;
+
+    if (!rst_n || fv_csn_high_len == 5'd20) fv_gap_owed <= 1'b0;
+    else if (fv_bit_cnt == 6'd40) fv_gap_owed <= 1'b1;
+  end
 
   // Read-data window: SCK rises 25..40 of a read frame
   logic fv_rd_window;
@@ -95,11 +100,12 @@ module fv_host_link_host_if (
       (!rst_n || spi_csn_i) -> !spi_sck_i
   );
 
-  // At least 10 clocks from the last SCK rise of a frame to the first rise of the next.
-  // Written for every pair of rises; inside a frame 1101 already gives it (H-2, V6)
-  asm_1103_frame_gap_min_10_clks: assume property(
+  // After a full frame, CS_n stays high for at least 20 clocks (2 SCK periods at clk/10)
+  // before the next frame. No gap is needed after an aborted frame: it has no access
+  // pending (read aborts: 1105) (KAN-27, replaces the H-2 minimum; V6)
+  asm_1103_frame_gap_min_20_clks: assume property(
     @(posedge clk) disable iff (!rst_n)
-      (fv_clks_since_rise < 4'd10) -> !fv_sck_rise
+      (fv_gap_owed && fv_csn_high_len > 5'd0 && fv_csn_high_len < 5'd20) -> spi_csn_i
   );
 
   // ---------------------------------------------------------------------------
@@ -199,7 +205,7 @@ module fv_host_link_host_if (
       fv_sck_rise && !spi_csn_i && !fv_rd_frame && fv_bit_cnt >= 6'd24 && fv_bit_cnt <= 6'd39
   );
 
-  // Another frame starts after a full 40-bit frame: its first SCK rise (H-2, V6)
+  // Another frame starts after a full 40-bit frame: its first SCK rise (KAN-27, V6)
   cov_1103_next_frame_starts: cover property(
     @(posedge clk) disable iff (!rst_n)
       fv_full_frame_seen && fv_sck_rise && !spi_csn_i && fv_bit_cnt == 6'd0

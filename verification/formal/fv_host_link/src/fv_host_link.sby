@@ -10,7 +10,7 @@
 #   prove  unbounded proof of all asserts (abc pdr, --keep-going: one trace per
 #          failing assert, engine_0/trace_<n>.vcd); stopped after 2 hours
 #   bmc    bounded check, quick counterexamples near reset (smtbmc bitwuzla)
-#   cover  reach every cover (engine_0/trace<n>.vcd); depth 600 covers a full
+#   cover  reach every cover (engine_0/trace<n>.vcd); depth 650 covers a full
 #          frame plus a second access; stopped after 2 hours
 
 [tasks]
@@ -24,7 +24,7 @@ prove: timeout 7200
 bmc:   mode bmc
 bmc:   depth 100
 cover: mode cover
-cover: depth 600
+cover: depth 650
 cover: timeout 7200
 
 [engines]
