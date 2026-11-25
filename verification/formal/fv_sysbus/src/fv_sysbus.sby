@@ -1,0 +1,48 @@
+# fv_sysbus.sby: SymbiYosys job for sysbus (src/sysbus/).
+# Testplan: ../testplan/sysbus_fv_testplan.md
+#
+# Run from ../run/ (sby resolves [files] against the current directory):
+#   cd verification/formal/fv_sysbus/run
+#   sby -f --prefix fv_sysbus ../src/fv_sysbus.sby [prove|bmc|cover]
+# Work folders: run/fv_sysbus_<task>/ (git-ignored).
+#
+# Tasks:
+#   prove  unbounded proof of all asserts (abc pdr, --keep-going: one trace per
+#          failing assert, engine_0/trace_<n>.vcd); stopped after 2 hours
+#   bmc    bounded check, quick counterexamples near reset (smtbmc bitwuzla)
+#   cover  reach every cover (engine_0/trace<n>.vcd); depth 40 covers a
+#          full 10-clock wait plus a second access; stopped after 2 hours
+
+[tasks]
+prove
+bmc
+cover
+
+[options]
+prove: mode prove
+prove: timeout 7200
+bmc:   mode bmc
+bmc:   depth 40
+cover: mode cover
+cover: depth 40
+cover: timeout 7200
+
+[engines]
+prove: abc --keep-going pdr
+bmc:   smtbmc bitwuzla
+cover: smtbmc bitwuzla
+
+[script]
+# RTL in sysbus.f order, then the property files
+read_slang sysbus.v fv_sysbus_host_link_if.sv fv_sysbus_main_ss_if.sv fv_sysbus_targets_if.sv fv_sysbus_e2e.sv fv_sysbus.sv --top sysbus
+prep -top sysbus
+
+[files]
+# RTL from src/sysbus/sysbus.f, relative to run/
+../../../../src/sysbus/sysbus.v
+# property files
+../src/fv_sysbus_host_link_if.sv
+../src/fv_sysbus_main_ss_if.sv
+../src/fv_sysbus_targets_if.sv
+../src/fv_sysbus_e2e.sv
+../src/fv_sysbus.sv
